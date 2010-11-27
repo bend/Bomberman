@@ -23,7 +23,8 @@ define
 
    fun {GridBehaviour Message Grid}
       case Message of askPossibilities(ManState) then
-	 [pos(ManState.pos.x+1 ManState.pos.y+1) pos(ManState.pos.x-1 ManState.pos.y-1)]
+	 {Send ManState.man possibleMoves(moves:[pos(ManState.pos.x+1 ManState.pos.y+1) pos(ManState.pos.x-1 ManState.pos.y-1)])}
+	 Grid
       [] movingTo(ManState Pos) then nil
 	 
       [] placeBomb(ManState Pos) then nil
