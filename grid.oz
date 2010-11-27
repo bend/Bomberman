@@ -25,8 +25,9 @@ define
       case Message of askPossibilities(ManState) then
 	 {Send ManState.man possibleMoves(moves:[pos(ManState.pos.x+1 ManState.pos.y+1) pos(ManState.pos.x-1 ManState.pos.y-1)])}
 	 Grid
-      [] movingTo(ManState Pos) then nil
-	 
+      [] movingTo(ManState Pos) then
+	 {Send ManState.man newManState(state:{AdjoinList ManState [pos#Pos])}}
+	 Grid
       [] placeBomb(ManState Pos) then nil
       end
  
