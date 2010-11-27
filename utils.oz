@@ -24,11 +24,11 @@ fun {NewPortObject2 Proc}
    {NewPort Sin}
 end
 
-% send a message starttime(Delay MyPort ReplyMessageToSend)
+% send a message starttime(delay:Delay port:MyPort response:ReplyMessageToSend)
 fun {Timer}
    {NewPortObject2
     proc {$Msg}
-       case Msg of starttimer(delay:T port:P response:Reply) then
+       case Msg of startTimer(delay:T port:P response:Reply) then
 	  thread {Delay T} {Send P Reply} end
        end
     end
