@@ -21,11 +21,14 @@ fun {ManBehaviour Msg State}
       else
 	 {AdjoinList State [color#Color]}
       end
-   [] newState(State) then
+   [] newManState(state:State) then
+      {Browse new#State}
+      {Browse pose#State.pos}
       State
    [] possibleMoves(moves:L) then
       {Browse Msg}
       {Browse L}
+      {Send State.grid movingTo(currentState:State dest:L.1)}
       State
    end
 end
