@@ -22,7 +22,13 @@ define
    end
 
    fun {GridBehaviour Message Grid}
-      nil
+      case Message of askPossibilities(ManState) then
+	 [pos(ManState.pos.x+1 ManState.pos.y+1) pos(ManState.pos.x-1 ManState.pos.y-1)]
+      [] movingTo(ManState Pos) then nil
+	 
+      [] placeBomb(ManState Pos) then nil
+      end
+ 
    end
    fun {NewGrid X Y}
       {Array.new 0 X {Array.new 0 Y block( state:_ ports:nil)}}
