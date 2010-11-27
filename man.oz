@@ -1,6 +1,6 @@
 declare
-[Grid] = {Module.link ['grid.ozf']}
-[Utils]= {Module.link ['utils.ozf']}
+[Grid] = {Module.link ['/Users/benoitdaccache/Documents/Programation/OZ/Bomberman/grid.ozf']}
+[Utils]= {Module.link ['/Users/benoitdaccache/Documents/Programation/OZ/Bomberman/utils.ozf']}
 
 fun {ManBehaviour Msg State}
    case Msg of explode(Color) then
@@ -80,6 +80,7 @@ fun {NewMan Grid Id X Y Color}
 		{Send State.grid movingTo(currentState:State dest:{ChooseMove L})}
 		State
 	     [] canMove then
+		{Send State.grid placeBomb(manState:State)}
 		{Send State.grid askPossibilities(State)}
 		State
 	     end
@@ -94,7 +95,7 @@ end
 
 declare
 {Browse a}
-GameGrid={Grid.newGridPort 40 40}
+GameGrid={Grid.newGridPort 4 4}
 {Browse GameGrid}
 {Browse b}
 Man = {NewMan GameGrid 1 0 0 blue}

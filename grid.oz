@@ -1,13 +1,34 @@
 functor
 export
    newGridPort:NewGridPort
+import
+   Utils at 'file://Users/benoitdaccache/Documents/Programation/OZ/Bomberman/utils.ozf'
+   Browser 
 
 define
 
    fun {NewGridPort X Y}
-      {NewPortObject GridBehaviour {NewGrid X Y}}
+      GridPort T in
+      T = {Utils.timer}
+      GridPort= {NewPortObject
+		     fun {$ Message Grid}
+			case Message of askPossibilities(ManState) then
+			   {Send ManState.man {PossibleMoves ManState}}
+			   Grid
+			[] movingTo(currentState:ManState dest:Pos) then
+			   {Browser.browser 'test'}
+			   {Send ManState.man newManState(type:move state:{AdjoinList ManState [pos#Pos]})}
+			   {ModifyGrid Grid ManState.pos Pos normal ManState.man}
+			[] placeBomb(manState:ManState) then
+			   %{AddBombToGrid Grid ManState T GridPort}
+			   Grid
+			[]bombTimeout(pos:Pos) then
+			   {DetonateBomb Grid Pos}
+			end
+		     end
+		     {NewGrid X Y}}
    end
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    fun {NewPortObject Behaviour Init}
    proc {MsgLoop S1 State}
       case S1 of Msg|S2 then
@@ -21,6 +42,13 @@ define
       {NewPort Sin}
    end
 
+   fun {DetonateBomb Grid Pos}
+      {Browser.browse 'bouuuum'#Pos}
+      Grid
+   end
+   
+
+
    fun {RemovePort Grid Pos Port}
       fun {Remove L}
 	 case L of H|T then
@@ -33,8 +61,6 @@ define
    in
       {Remove {GetItemAt Grid Pos}}
    end
-
-
 
    fun {AddPort Grid Pos Port}
       Port|{GetItemAt Grid Pos}
@@ -52,26 +78,14 @@ define
       possibleMoves(moves:[pos(x:ManState.pos.x+1 y:ManState.pos.y+1) pos(x:ManState.pos.x-1 y:ManState.pos.y-1)])
    end
 
-   fun {AddBombToGrid Grid ManState Pos}
+   fun {AddBombToGrid Grid ManState Timer GridPort}
       local Grid in
-	 Grid  = {SetItemAt Grid Pos block(state:bomb ports:{GetItemAt Grid Pos})}
-	 end
-      
+	 Grid  = {SetItemAt Grid ManState.pos block(state:bomb ports:{GetItemAt Grid ManState.pos})}
+      end
+      {Send Timer startTimer(delay:1000 port:GridPort response:bombTimeout(pos:ManState.pos))}
+      Grid
    end
    
-
-  fun {GridBehaviour Message Grid}
-      case Message of askPossibilities(ManState) then
-	 {Send ManState.man {PossibleMoves ManState}}
-	 Grid
-      [] movingTo(currentState:ManState dest:Pos) then
-	 {Send ManState.man newManState(type:move state:{AdjoinList ManState [pos#Pos]})}
-	 {ModifyGrid Grid ManState.pos Pos normal ManState.man}
-      [] placeBomb(ManState Pos) then
-	 {AddBombToGrid Grid ManState Pos}
-      end
- 
-   end
    fun {NewGrid X Y}
       {Array.new 0 X {Array.new 0 Y block( state:_ ports:nil)}}
    end
