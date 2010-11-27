@@ -1,56 +1,64 @@
 declare
 [Grid] = {Module.link ['/home/rb/etudes/Bomberman/grid.ozf']}
+[Utils]= {Module.link ['/home/rb/etudes/Bomberman/utils.ozf']}
 
-fun {NewPortObject Behaviour Init}
-   proc {MsgLoop S1 State}
-      case S1 of Msg|S2 then
-	 {MsgLoop S2 {Behaviour Msg State}}
-      [] nil then skip
-      end
-   end
-   Sin
-in
-   thread {MsgLoop Sin Init} end
-   {NewPort Sin}
-end
 fun {ManBehaviour Msg State}
    case Msg of explode(Color) then
+      % from grid
       if Color==State.color then
 	 {Send State.grid died(state: State)}
 	 State
       else
 	 {AdjoinList State [color#Color]}
       end
-   [] newManState(state:State) then
+   [] newManState(type:Type state:State) then
+      % from grid
       {Browse new#State}
-      {Browse pose#State.pos}
+      {Browse pos#State.pos}
+      % if update was due to a move, trigger new move request
+      if Type==move then
+	 {Send State.timer starttimer(delay:{DelayFromStrength State.strength} port:State.man response:canMove)}
+      end
       State
    [] possibleMoves(moves:L) then
+      % from grid
       {Browse Msg}
       {Browse L}
-      {Send State.grid movingTo(currentState:State dest:L.1)}
+      {Send State.grid movingTo(currentState:State dest:{ChooseMove L})}
+      State
+   [] canMove then
+      {Send State.grid askPossibilities(State)}
       State
    end
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% To implement
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+fun {DelayFromStrength Strength}
+   Strength*1000
+end
+
+fun {ChooseMove PossibleMoves}
+   PossibleMoves.1
 end
 
 fun {NewMan Grid Id X Y Color}
    % Initialize state and man
    {Browse man#a}
-   State =  man(color:Color strength:1 state:waiting grid:Grid pos:pos(x:X y:Y) id:Id man:Man)
-   Man = {NewPortObject ManBehaviour State }
+   ManTimer = {Utils.timer}
+   State =  man(color:Color strength:1 state:waiting grid:Grid pos:pos(x:X y:Y) id:Id man:Man timer:ManTimer)
+   Man = {Utils.newPortObject ManBehaviour State }
    {Browse man#b}
    % Send request for first move
-   thread
-%      {Delay {DelayForStrength Man}}
-      {Send Grid askPossibilities(State)}      
-   end
+   {Send ManTimer starttimer(delay:{DelayFromStrength 1} port:Man response:canMove)}
 in
   Man     
 end
 
 declare
 {Browse a}
-GameGrid={Grid.newGridPort 4 4}
+GameGrid={Grid.newGridPort 40 40}
 {Browse GameGrid}
 {Browse b}
 Man = {NewMan GameGrid 1 0 0 blue}
