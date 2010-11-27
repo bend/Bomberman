@@ -1,11 +1,34 @@
 declare [Test] = {Module.link ['/Users/benoitdaccache/Documents/Programation/OZ/Bomberman/grid.ozf']}
-local X in
-    X={Test.newGrid 10 10}
-   {Array.put {Array.get X 1} 1 block( state:1 ports:[1 3 4])}
-   {Browse {Test.getItemAt X 1 1}}
+  fun {NewGrid X Y}
+      {Array.new 0 X {Array.new 0 Y block( state:_ ports:nil)}}
+   end
 
-   {Array.put {Array.get X 1} 1 block( state:2 ports:[1 2 3 4])}
+   fun {GetItemAt Arr X Y}
+      {Array.get {Array.get Arr X} Y}
+   end
 
-   {Browse {Test.getItemAt X 1 1}}
+   proc {SetItemAt Arr X Y NewItem}
+      {Array.put {Array.get Arr X} Y NewItem}
+   end
+
+fun {NewPortObject Behaviour Init}
+   proc {MsgLoop S1 State}
+      case S1 of Msg|S2 then
+	 {MsgLoop S2 {Behaviour Msg State}}
+      [] nil then skip
+      end
+   end
+   Sin
+in
+   thread {MsgLoop Sin Init} end
+   {NewPort Sin}
 end
 
+
+fun {NewGridPort X Y}
+   {NewPortObject GridBehaviour {NewGrid X Y}}
+end
+
+fun {GridBehaviour Message Grid}
+   nil
+end
