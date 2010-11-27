@@ -2,6 +2,7 @@ functor
 export
    newGrid:NewGrid
    getItemAt:GetItemAt
+   setItemAt:SetItemAt
 
 define
    
@@ -13,5 +14,8 @@ define
       {Array.get {Array.get Arr X} Y}
    end
 
+   proc {SetItemAt Arr X Y NewItem}
+      {Array.put {Array.get Arr X} Y NewItem}
+   end
    
 end
