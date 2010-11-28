@@ -10,7 +10,7 @@ define
    fun {NewGridPort X Y}
       GridPort T in
       T = {Utils.timer}
-      GridPort= {NewPortObject
+      GridPort= {Utils.newPortObject
 		 
 		 fun {$ Message Grid}
 		    case Message of askPossibilities(ManState) then
@@ -29,25 +29,6 @@ define
    end
 
 
-   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-      GridPort= {Utils.newPortObject
-		     fun {$ Message Grid}
-			case Message of askPossibilities(ManState) then
-			   {Send ManState.man {PossibleMoves ManState}}
-			   Grid
-			[] movingTo(currentState:ManState dest:Pos) then
-			   {Browser.browser 'test'}
-			   {Send ManState.man newManState(type:move state:{AdjoinList ManState [pos#Pos]})}
-			   {ModifyGrid Grid ManState.pos Pos normal ManState.man}
-			[] placeBomb(manState:ManState) then
-			   %{AddBombToGrid Grid ManState T GridPort}
-			   Grid
-			[]bombTimeout(pos:Pos) then
-			   {DetonateBomb Grid Pos}
-			end
-		     end
-		     {NewGrid X Y}}
-   end
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    fun {DetonateBomb Grid Pos}
       {Browser.browse 'bouuuum'#Pos}
@@ -65,7 +46,7 @@ define
 	 end
       end
    in
-      {Remove {GetItemAt Grid Pos}}
+      {Remove {GetItemAt Grid Pos}.ports}
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -111,3 +92,4 @@ define
       Arr
    end
 end
+
