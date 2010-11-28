@@ -27,21 +27,28 @@ define
 		 end
 		 {NewGrid X Y}}
    end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   fun {NewPortObject Behaviour Init}
-   proc {MsgLoop S1 State}
-      case S1 of Msg|S2 then
-	 {MsgLoop S2 {Behaviour Msg State}}
-      [] nil then skip
-      end
-   end
-   Sin
-   in
-      thread {MsgLoop Sin Init} end
-      {NewPort Sin}
-   end
+
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      GridPort= {Utils.newPortObject
+		     fun {$ Message Grid}
+			case Message of askPossibilities(ManState) then
+			   {Send ManState.man {PossibleMoves ManState}}
+			   Grid
+			[] movingTo(currentState:ManState dest:Pos) then
+			   {Browser.browser 'test'}
+			   {Send ManState.man newManState(type:move state:{AdjoinList ManState [pos#Pos]})}
+			   {ModifyGrid Grid ManState.pos Pos normal ManState.man}
+			[] placeBomb(manState:ManState) then
+			   %{AddBombToGrid Grid ManState T GridPort}
+			   Grid
+			[]bombTimeout(pos:Pos) then
+			   {DetonateBomb Grid Pos}
+			end
+		     end
+		     {NewGrid X Y}}
+   end
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    fun {DetonateBomb Grid Pos}
       {Browser.browse 'bouuuum'#Pos}
       Grid
