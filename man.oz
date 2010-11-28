@@ -40,12 +40,10 @@ fun {NewMan Grid Id X Y Color}
 		end
 	     [] newManState(type:Type state:State) then
       % from grid
-		{Browse new#State}
-		{Browse pos#State.pos}
       % if update was due to a move, trigger new move request
-		if Type==move then
-		   {Send ManTimer startTimer(delay:{DelayFromStrength State.strength} port:Man response:canMove)}
-		end
+		%if Type==move then
+		   %{Send ManTimer startTimer(delay:{DelayFromStrength State.strength} port:Man response:canMove)}
+		%end
 		State
 	     [] possibleMoves(moves:L) then
       % from grid
@@ -54,9 +52,11 @@ fun {NewMan Grid Id X Y Color}
 		{Send State.grid movingTo(currentState:State dest:{ChooseMove L})}
 		State
 	     [] canMove then
-		{Send State.grid askPossibilities(State)}
-		%{Send State.grid placeBomb(manState:State)}
-
+		{Browse received_can_move}
+%		{Send State.grid askPossibilities(State)}
+		{Send State.grid placeBomb(manState:State)}
+		{Send ManTimer startTimer(delay:{DelayFromStrength State.strength} port:Man response:canMove)}
+		{Browse sent_place_bomb}
 		State
 	     end
 	  end
