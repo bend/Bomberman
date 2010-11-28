@@ -104,9 +104,14 @@ define
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    fun {GenericAdder Grid Pos Timer GridPort Type}
       GridTemp in
-      GridTemp  = {SetItemAt Grid Pos {AdjoinList {GetItemAt Grid Pos} [Type#{GetItemAt Grid Pos}.Type+1]}}
+%      GridTemp  = {SetItemAt Grid Pos {AdjoinList {GetItemAt Grid Pos} [Type#{GetItemAt Grid Pos}.Type+1]}}
+      GridTemp = {UpdateItemAt Grid Pos [Type#{GetItemAt Grid Pos}.Type+1]}
       {Send Timer startTimer(delay:1000 port:GridPort response:Type#timer(pos:Pos))}
       GridTemp
+   end
+
+   fun {UpdateItemAt Grid Pos Updates}
+      {SetItemAt Grid Pos {AdjoinList {GetItemAt Grid Pos} Updates }}
    end
    
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
