@@ -10,7 +10,7 @@ define
    fun {NewGridPort X Y}
       GridPort T in
       T = {Utils.timer}
-      GridPort= {NewPortObject
+      GridPort= {Utils.newPortObject
 		     fun {$ Message Grid}
 			case Message of askPossibilities(ManState) then
 			   {Send ManState.man {PossibleMoves ManState}}
@@ -29,26 +29,11 @@ define
 		     {NewGrid X Y}}
    end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   fun {NewPortObject Behaviour Init}
-   proc {MsgLoop S1 State}
-      case S1 of Msg|S2 then
-	 {MsgLoop S2 {Behaviour Msg State}}
-      [] nil then skip
-      end
-   end
-   Sin
-   in
-      thread {MsgLoop Sin Init} end
-      {NewPort Sin}
-   end
-
    fun {DetonateBomb Grid Pos}
       {Browser.browse 'bouuuum'#Pos}
       Grid
    end
    
-
-
    fun {RemovePort Grid Pos Port}
       fun {Remove L}
 	 case L of H|T then
