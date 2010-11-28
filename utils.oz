@@ -38,8 +38,8 @@ define
       }
    end
 
-    fun {Random Min Max}
-       Min + {OS.rand } mod (Max-Min)
-    end
-    
+   fun {Random Min Max}
+      Min + {OS.rand } mod (Max-Min)
+   end
+   
 end   

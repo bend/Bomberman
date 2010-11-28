@@ -1,10 +1,10 @@
 declare
 %Ben
-%[Grid] = {Module.link ['/Users/benoitdaccache/Documents/Programation/OZ/Bomberman/grid.ozf']}
-%[Utils]= {Module.link ['/Users/benoitdaccache/Documents/Programation/OZ/Bomberman/utils.ozf']}
+[Grid] = {Module.link ['/Users/benoitdaccache/Documents/Programation/OZ/Bomberman/grid.ozf']}
+[Utils]= {Module.link ['/Users/benoitdaccache/Documents/Programation/OZ/Bomberman/utils.ozf']}
 % Raph
-[Grid] = {Module.link ['grid.ozf']}
-[Utils]= {Module.link ['utils.ozf']}
+%[Grid] = {Module.link ['grid.ozf']}
+%[Utils]= {Module.link ['utils.ozf']}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % To implement

@@ -3,9 +3,9 @@ export
    newGridPort:NewGridPort
 import
 % Raph
-   Utils at 'file:///home/rb/etudes/Bomberman/utils.ozf'
+%   Utils at 'file:///home/rb/etudes/Bomberman/utils.ozf'
 % Ben   
-%   Utils at 'file://Users/benoitdaccache/Documents/Programation/OZ/Bomberman/utils.ozf'
+   Utils at 'file://Users/benoitdaccache/Documents/Programation/OZ/Bomberman/utils.ozf'
    Browser 
 
 define
@@ -110,6 +110,9 @@ define
       GridTemp
    end
 
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   % Updates the Item At Pos with the list of Updates
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    fun {UpdateItemAt Grid Pos Updates}
       {SetItemAt Grid Pos {AdjoinList {GetItemAt Grid Pos} Updates }}
    end
