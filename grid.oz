@@ -74,8 +74,9 @@ define
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    fun {MovePort Grid OldPos NewPos Port}
       GridTemp in
-      GridTemp= {SetItemAt Grid OldPos {AdjoinList {GetItemAt Grid OldPos} [ports#{RemovePort Grid OldPos Port}]}}
-      {SetItemAt GridTemp NewPos {AdjoinList {GetItemAt GridTemp NewPos} [ports#{AddPort GridTemp NewPos Port}]}}
+      GridTemp = {UpdateItemAt Grid OldPos [ports#{RemovePort Grid OldPos Port}]}
+      {UpdateItemAt Grid NewPos  [ports#{AddPort GridTemp NewPos Port}]}
+ 
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -104,7 +105,6 @@ define
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    fun {GenericAdder Grid Pos Timer GridPort Type}
       GridTemp in
-%      GridTemp  = {SetItemAt Grid Pos {AdjoinList {GetItemAt Grid Pos} [Type#{GetItemAt Grid Pos}.Type+1]}}
       GridTemp = {UpdateItemAt Grid Pos [Type#{GetItemAt Grid Pos}.Type+1]}
       {Send Timer startTimer(delay:1000 port:GridPort response:Type#timer(pos:Pos))}
       GridTemp
