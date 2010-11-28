@@ -81,7 +81,7 @@ fun {NewMan Grid Id X Y Color}
 		State
 	     [] canMove then
 		{Send State.grid askPossibilities(State)}
-		{Send State.grid placeBomb(manState:State)}
+		%{Send State.grid placeBomb(manState:State)}
 
 		State
 	     end
@@ -96,7 +96,7 @@ end
 
 declare
 {Browse a}
-GameGrid={Grid.newGridPort 4 4}
+GameGrid={Grid.newGridPort 10 10}
 {Browse GameGrid}
 {Browse b}
 Man = {NewMan GameGrid 1 0 0 blue}

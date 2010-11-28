@@ -21,9 +21,9 @@ define
 		       Grid
 		    [] movingTo(currentState:ManState dest:Pos) then
 		       {Send ManState.man newManState(type:move state:{AdjoinList ManState [pos#Pos]})}
-		       {ModifyGrid Grid ManState.pos Pos normal ManState.man}
+		       {MovePort Grid ManState.pos Pos ManState.man}
 		    [] placeBomb(manState:ManState) then
-		       {AddBombToGrid Grid ManState T GridPort}
+		       {AddBombToGrid Grid ManState.pos T GridPort}
 		    []bombTimeout(pos:Pos) then
 		       {DetonateBomb Grid Pos}
 		    end
@@ -66,11 +66,10 @@ define
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Modifies the grid by removing the 'man' from his oldPos and adds it to his newPos
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   fun {ModifyGrid Grid OldPos NewPos Type Port}
-      local GridTemp in
-	 GridTemp= {SetItemAt Grid OldPos block(state:normal ports:{RemovePort Grid OldPos Port})}%remove man from pos
-	 {SetItemAt GridTemp NewPos block(state:normal ports:{AddPort Grid NewPos Port})}%and add it here
-      end
+   fun {MovePort Grid OldPos NewPos Port}
+      GridTemp in
+      GridTemp= {AdjoinList {GetItemAt Grid OldPos} [ports#{RemovePort Grid OldPos Port}]}
+      {AdjoinList {GetItemAt GridTemp NewPos} [ports#{AddPort GridTemp NewPos Port}]}
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -83,21 +82,45 @@ define
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Adds the bomb to the grid and stats a timer.
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   fun {AddBombToGrid Grid ManState Timer GridPort}
-      local Grid in
-	 Grid  = {SetItemAt Grid ManState.pos block(state:bomb ports:{GetItemAt Grid ManState.pos})}
+   fun {AddBombToGrid Grid Pos Timer GridPort}
+      {Utils.genericAdder Grid Pos Timer GridPort bombs}
+   end
+
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   % Adds the food to the grid and stats a timer.
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   fun {AddFoodToGrid Grid Pos Timer GridPort}
+      {Utils.genericAdder Grid Pos Timer GridPort foods}
+   end
+
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   % Adds the Type to the grid and stats a timer.
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   fun {GenericAdder Grid Pos Timer GridPort Type}
+      local GridTemp in
+	 GridTemp  = {AdjoinList {GetItemAt Grid Pos} [Type#{GetItemAt Grid Pos}.Type+1]}
       end
-      {Send Timer startTimer(delay:1000 port:GridPort response:bombTimeout(pos:ManState.pos))}
+      {Send Timer startTimer(delay:1000 port:GridPort response:Type#timer(pos:Pos))}
       Grid
    end
+   
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Returns a new Grid depending of X*Y
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    fun {NewGrid X Y}
-      {Array.new 0 X {Array.new 0 Y block( state:_ ports:nil)}}
+      {Array.new 0 X {Array.new 0 Y block( type:{BlockType} bombs:0 foods:0 ports:nil)}}
    end
 
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   % Returns the block state randomly
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   fun {BlockType }
+      R in R= {Utils.random 0 3}
+      if R==1 then wall
+      else normal end
+   end
+   
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Returns the item (record) that is located on the block X Y of the grid
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
