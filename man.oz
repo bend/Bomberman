@@ -80,8 +80,9 @@ fun {NewMan Grid Id X Y Color}
 		{Send State.grid movingTo(currentState:State dest:{ChooseMove L})}
 		State
 	     [] canMove then
-		{Send State.grid placeBomb(manState:State)}
 		{Send State.grid askPossibilities(State)}
+		{Send State.grid placeBomb(manState:State)}
+
 		State
 	     end
 	  end
