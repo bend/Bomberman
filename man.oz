@@ -10,7 +10,7 @@ declare
 % To implement
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 fun {DelayFromStrength Strength}
-   Strength*1000
+   Strength*1000*3
 end
 fun {ChooseMove PossibleMoves}
    PossibleMoves.1

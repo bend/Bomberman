@@ -27,7 +27,8 @@ define
 		       {MovePort Grid ManState.pos Pos ManState.man}
 		    [] placeBomb(manState:ManState) then
 		       {AddBombToGrid Grid ManState.pos T GridPort}
-		    []bombTimeout(pos:Pos) then
+		    []bombs#timer(pos:Pos) then
+		       {Browser.browse got_bombs_event}
 		       {DetonateBomb Grid Pos}
 		    else
 		       {Browser.browse got_unmanaged_message#Message}
