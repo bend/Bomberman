@@ -2,7 +2,10 @@ functor
 export
    newGridPort:NewGridPort
 import
-   Utils at 'file://Users/benoitdaccache/Documents/Programation/OZ/Bomberman/utils.ozf'
+% Raph
+   Utils at 'file:///home/rb/etudes/Bomberman/utils.ozf'
+% Ben   
+%   Utils at 'file://Users/benoitdaccache/Documents/Programation/OZ/Bomberman/utils.ozf'
    Browser 
 
 define
@@ -137,4 +140,6 @@ define
       Arr
    end
 end
+
+
 

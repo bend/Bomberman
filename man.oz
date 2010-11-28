@@ -1,7 +1,10 @@
 declare
-[Grid] = {Module.link ['/Users/benoitdaccache/Documents/Programation/OZ/Bomberman/grid.ozf']}
-[Utils]= {Module.link ['/Users/benoitdaccache/Documents/Programation/OZ/Bomberman/utils.ozf']}
-
+%Ben
+%[Grid] = {Module.link ['/Users/benoitdaccache/Documents/Programation/OZ/Bomberman/grid.ozf']}
+%[Utils]= {Module.link ['/Users/benoitdaccache/Documents/Programation/OZ/Bomberman/utils.ozf']}
+% Raph
+[Grid] = {Module.link ['grid.ozf']}
+[Utils]= {Module.link ['utils.ozf']}
 fun {ManBehaviour Msg State}
    case Msg of explode(Color) then
       % from grid
