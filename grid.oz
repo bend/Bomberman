@@ -17,8 +17,8 @@ define
       GridPort T in
       T = {Utils.timer}
       GridPort= {Utils.newPortObject
-		 
 		 fun {$ Message Grid}
+		    {Browser.browse Grid}
 		    case Message of askPossibilities(ManState) then
 		       {Send ManState.man {PossibleMoves ManState}}
 		       Grid
@@ -152,13 +152,13 @@ define
    fun {NewGrid X Y}
       T in
       T = {MakeTuple grid X}
-      for I in 1..X  do
+      for I in 1..X do
 	 for J in 1..Y do
 	    T.I = {MakeTuple grid Y}
 	    T.I.J = block(type:normal bombs:0 foods:0 ports:nil)
 	 end
       end
-      T
+      {SetWallsInGrid T {RandomPositions 3 X Y}}
    end
 
    fun {NewEmptyGrid X Y}
@@ -177,11 +177,11 @@ define
    fun {SetWallsInGrid Grid L}
       case L of H|T then
 	 {Browser.browse setting_wall_at#H}
-	 {Delay 5000}
+	 {Delay 1000}
 	 Z Tep in
 	 Z = {UpdateItemAt Grid H [type#wall]}
 	 Tep={SetWallsInGrid Z T}
-	 {Delay 200000}
+	 {Delay 10000}
 	 Tep
       else Grid end
    end
@@ -189,7 +189,7 @@ define
    fun {RandomPositions N XMax YMax}
       if N==0 then nil
       else
-	 pos(x:{Utils.random 0 XMax} y:{Utils.random 0 YMax})|{RandomPositions N-1 XMax YMax}
+	 pos(x:{Utils.random 1 XMax} y:{Utils.random 1 YMax})|{RandomPositions N-1 XMax YMax}
       end
    end
 
