@@ -30,6 +30,8 @@ define
 		    []bombs#timer(pos:Pos params:Params) then
 		       {Browser.browse got_bombs_event}
 		       {DetonateBomb Grid Pos Params}
+		    []foods#timer(pos:Pos) then
+		       {UpdateItemAt Grid Pos [foods#{GetItemAt Grid Pos}.foods -1]}
 		    else
 		       {Browser.browse got_unmanaged_message#Message}
 		       Grid
@@ -42,11 +44,35 @@ define
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Detonates the bomb, kills player that are affected
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   fun {DetonateBomb Grid Pos Params}      
-      {Browser.browse boom#Pos}
-      {Browser.browse {GetAffectedPos Grid Pos Params.power}}
-      Grid
+   fun {DetonateBomb Grid Pos Params}
+      {Browser.browse 'Boummmmmmmmmm'}
+      fun {DetonateBombAux Grid LPos}
+	 case LPos of H|T then
+	    O in O= {GetItemAt Grid H}
+	    if O.type == normal then 
+	       {SendToAll {GetItemAt Grid H}.ports hitByBomb(color:Params.color)}
+	    end
+	    {DetonateBombAux {UpdateItemAt Grid H [foods#0 bombs#0 ports#nil]} T}
+	 else Grid
+	 end
+      end
+   in
+      local T in
+	 T = {DetonateBombAux Grid {GetAffectedPos Grid Pos Params.power}}
+	 {Browser.browse T}
+	 T
+      end
    end
+      
+   proc {SendToAll L M}
+      case L of H|T then
+	 {Send H M}
+	 {SendToAll T M}
+      else skip
+      end
+   end 
+      
+
 
    fun {GetAffectedPos Grid Pos Power}
       L1 L2 L3 L4 in
@@ -177,11 +203,9 @@ define
    fun {SetWallsInGrid Grid L}
       case L of H|T then
 	 {Browser.browse setting_wall_at#H}
-	 {Delay 1000}
 	 Z Tep in
 	 Z = {UpdateItemAt Grid H [type#wall]}
 	 Tep={SetWallsInGrid Z T}
-	 {Delay 10000}
 	 Tep
       else Grid end
    end
@@ -192,6 +216,9 @@ define
 	 pos(x:{Utils.random 1 XMax} y:{Utils.random 1 YMax})|{RandomPositions N-1 XMax YMax}
       end
    end
+
+
+   
 
    
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

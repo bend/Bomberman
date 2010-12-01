@@ -24,6 +24,7 @@ fun {NewMan Grid Id X Y Color}
    {Browse man#a}
    ManTimer = {Utils.timer}
    State =  man(color:Color strength:1 state:waiting grid:Grid pos:pos(x:X y:Y) id:Id man:Man)
+   {Send Grid movingTo(currentState:State dest:pos(x:X y:Y))}
    Man = {Utils.newPortObject
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -52,12 +53,24 @@ fun {NewMan Grid Id X Y Color}
 		{Send State.grid movingTo(currentState:State dest:{ChooseMove L})}
 		State
 	     [] canMove then
-		{Browse received_can_move}
+%		{Browse received_can_move}
 %		{Send State.grid askPossibilities(State)}
 		{Send State.grid placeBomb(manState:State)}
 		{Send ManTimer startTimer(delay:{DelayFromStrength State.strength} port:Man response:canMove)}
 		{Browse sent_place_bomb}
 		State
+	     [] hitByBomb(color:Color) then
+		if Color == State.color then
+		   {Browse 'Dead'}
+		   {Delay 1000}
+		   State
+		else
+		   TState in
+		   TState = {AdjoinList State [color#Color strength#1]}
+		   {Send State.grid movingTo(currentState:TState dest:pos)}
+		   TState
+		end
+	     else {Browse Msg}State
 	     end
 	  end
 	  State }
@@ -70,7 +83,7 @@ end
 
 declare
 {Browse a}
-GameGrid={Grid.newGridPort 3 3}
+GameGrid={Grid.newGridPort 10 10}
 {Browse GameGrid}
 {Browse b}
 Man = {NewMan GameGrid 1 5 5 blue}
