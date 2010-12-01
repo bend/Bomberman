@@ -1,34 +1,61 @@
-declare [Test] = {Module.link ['/Users/benoitdaccache/Documents/Programation/OZ/Bomberman/grid.ozf']}
-  fun {NewGrid X Y}
-      {Array.new 0 X {Array.new 0 Y block( state:_ ports:nil)}}
-   end
-
-   fun {GetItemAt Arr X Y}
-      {Array.get {Array.get Arr X} Y}
-   end
-
-   proc {SetItemAt Arr X Y NewItem}
-      {Array.put {Array.get Arr X} Y NewItem}
-   end
-
-fun {NewPortObject Behaviour Init}
-   proc {MsgLoop S1 State}
-      case S1 of Msg|S2 then
-	 {MsgLoop S2 {Behaviour Msg State}}
-      [] nil then skip
+declare
+fun {NewGrid X Y}
+      T in
+      T = {MakeTuple grid X}
+      for I in 1..X  do
+	 for J in 1..Y do
+	    T.I = {MakeTuple grid Y}
+	    T.I.J = block(type:_ bombs:_ foods:_ ports:_)
+	 end
       end
+      T
    end
-   Sin
-in
-   thread {MsgLoop Sin Init} end
-   {NewPort Sin}
+
+
+ fun {GetItemAt Grid Pos}
+    X Y in X= Pos.x
+    Y =Pos.y
+    Grid.X.Y
+ end
+
+   fun {UpdateItemAt Grid Pos Updates}
+      {SetItemAt Grid Pos {AdjoinList {GetItemAt Grid Pos} Updates }}
+   end
+ 
+   fun {SetItemAt T Pos NewItem}
+      {Browse {Width T}}
+      {Browse {Width T.1}}
+      Temp in Temp = {NewGrid {Width T} {Width T.1}}
+      for I in 1..{Width T} do
+	 for J in 1..{Width T.1} do
+	    if Pos.x==I andthen Pos.y==J then
+	       Temp.I.J = NewItem
+	    else
+	       Temp.I.J = T.I.J
+	    end
+	 end
+      end
+      Temp
+end
+
+local T T2 in
+   T = {NewGrid 10 10}
+   {Browse T}
+  % T.1.2 = salut(1 2 3)
+   %{Browse T}
+   T2 = {UpdateItemAt T pos(x:1 y:2) [bombs#1]}
+   T3 = {UpdateItemAt T pos(x:1 y:2) [bombs#2]}
+
+   {Browse T2}
+   {Browse T3}
 end
 
 
-fun {NewGridPort X Y}
-   {NewPortObject GridBehaviour {NewGrid X Y}}
-end
 
-fun {GridBehaviour Message Grid}
-   nil
-end
+
+
+
+
+
+
+

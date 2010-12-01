@@ -70,7 +70,7 @@ end
 
 declare
 {Browse a}
-GameGrid={Grid.newGridPort 3 3}
+GameGrid={Grid.newGridPort 10 10}
 {Browse GameGrid}
 {Browse b}
-Man = {NewMan GameGrid 1 1 1 blue}
+Man = {NewMan GameGrid 1 5 5 blue}

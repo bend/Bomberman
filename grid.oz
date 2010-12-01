@@ -19,8 +19,6 @@ define
       GridPort= {Utils.newPortObject
 		 
 		 fun {$ Message Grid}
-		    %{BrowseGrid Grid}
-		    {Delay 15000}
 		    case Message of askPossibilities(ManState) then
 		       {Send ManState.man {PossibleMoves ManState}}
 		       Grid
@@ -152,17 +150,38 @@ define
    % Returns a new Grid depending of X*Y
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    fun {NewGrid X Y}
-      Grid in
-      Grid = {Array.new 0 X {Array.new 0 Y block( type:normal bombs:0 foods:0 ports:nil)}}
-      %{Browser.browse {RandomPositions 1 X Y}}
-      {SetWallsInGrid Grid {RandomPositions 1 X Y}}
+      T in
+      T = {MakeTuple grid X}
+      for I in 1..X  do
+	 for J in 1..Y do
+	    T.I = {MakeTuple grid Y}
+	    T.I.J = block(type:normal bombs:0 foods:0 ports:nil)
+	 end
+      end
+      T
    end
+
+   fun {NewEmptyGrid X Y}
+      T in
+      T = {MakeTuple grid X}
+      for I in 1..X  do
+	 for J in 1..Y do
+	    T.I = {MakeTuple grid Y}
+	    T.I.J = block(type:_ bombs:_ foods:_ ports:_)
+	 end
+      end
+      T
+   end
+
 
    fun {SetWallsInGrid Grid L}
       case L of H|T then
 	 {Browser.browse setting_wall_at#H}
-	 Tep in Tep={SetWallsInGrid {UpdateItemAt Grid H [type#wall]} T}
-	 {BrowseGrid Tep}
+	 {Delay 5000}
+	 Z Tep in
+	 Z = {UpdateItemAt Grid H [type#wall]}
+	 Tep={SetWallsInGrid Z T}
+	 {Delay 200000}
 	 Tep
       else Grid end
    end
@@ -179,27 +198,30 @@ define
    % Returns the item (record) that is located on the block X Y of the grid
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    
-   fun {GetItemAt Arr Pos}
-      {Array.get {Array.get Arr Pos.x} Pos.y}
+   fun {GetItemAt Grid Pos}
+      X Y in X= Pos.x
+      Y =Pos.y
+      Grid.X.Y
    end
 
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   % Sets the Item on the block grid X Y
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   fun {SetItemAt Arr Pos NewItem}
-      {Array.put {Array.get Arr Pos.x} Pos.y NewItem}
-      Arr
-   end
-
-   proc {BrowseGrid Grid}
-      for I in 0..{Array.high Grid} do
-	 for J in 0.. {Array.high Grid.I} do
-	    {Browser.browse {GetItemAt Grid pos(x:I y:J)}}
+   fun {SetItemAt T Pos NewItem}
+      Temp in Temp = {NewEmptyGrid {Width T} {Width T.1}}
+      for I in 1..{Width T} do
+	 for J in 1..{Width T.1} do
+	    if Pos.x==I andthen Pos.y==J then
+	       Temp.I.J = NewItem
+	    else
+	       Temp.I.J = T.I.J
+	    end
 	 end
       end
+      Temp
    end
+
    
-      
 end
 
 
