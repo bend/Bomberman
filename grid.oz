@@ -2,13 +2,7 @@ functor
 export
    newGridPort:NewGridPort
 import
-% Raph
-%if {OS.uName}.sysname=="Linux" then
-  % Utils at 'utils.ozf'
-%else
-% Ben   
-   Utils at 'file://Users/benoitdaccache/Documents/Programation/OZ/Bomberman/utils.ozf'
-%end
+   Utils at './utils.ozf'
    Browser 
 
 define
@@ -53,7 +47,8 @@ define
       fun {DetonateBombAux Grid LPos}
 	 case LPos of H|T then
 	    O in O= {GetItemAt Grid H}
-	    if O.type == normal then 
+	    if O.type == normal then
+	       if
 	       {SendToAll {GetItemAt Grid H}.ports hitByBomb(color:Params.color)}
 	    end
 	    {DetonateBombAux {UpdateItemAt Grid H [foods#0 bombs#0 ports#nil]} T}

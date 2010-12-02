@@ -1,9 +1,14 @@
-declare
-[Grid] = {Module.link ['/Users/benoitdaccache/Documents/Programation/OZ/Bomberman/grid.ozf']}
-[Utils] = {Module.link ['/Users/benoitdaccache/Documents/Programation/OZ/Bomberman/utils.ozf']}
+functor
+export
+   newMan:NewMan
+import
+   Utils at './utils.ozf'
+   Grid at './grid.ozf'
+   Browser
 
 
-   
+define
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % To implement
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -21,7 +26,7 @@ declare
    % Initialize state and man
       ManTimer = {Utils.timer}
       State =  man(color:Color strength:1 state:waiting grid:Grid pos:pos(x:X y:Y) id:Id man:Man)
-      {Browse settingup}
+      {Browser.browse settingup}
       {Send Grid movingTo(currentState:State dest:pos(x:X y:Y))}
       Man = {Utils.newPortObject
 
@@ -34,10 +39,10 @@ declare
 		else
 		   case Msg of hitByBomb(color:Color) then
 		      if Color==State.color then
-			 {Browse deadByTeammate}
+			 {Browser.browse deadByTeammate}
 			 {AdjoinList State [state#dead]}
 		      else
-			 {Browse deadByOther}
+			 {Browser.browse deadByOther}
 			 T in T = {AdjoinList State [color#Color]}
 			 {Send Grid movingTo(currentState:T dest:T.pos)}
 			 T
@@ -57,11 +62,11 @@ declare
 		      {Browser.browse received_can_move}
 		      {Send State.grid placeBomb(manState:State)}%{Send State.grid askPossibilities(State)}
 		      {Send ManTimer startTimer(delay:{DelayFromStrength State.strength} port:Man response:canMove)}
-		      {Browse sent_place_bomb}
+		      {Browser.browse sent_place_bomb}
 		      {Delay 1000}
 		      State
 		   else
-		      {Browse Msg}
+		      {Browser.browse Msg}
 		      State
 		   end
 		end
@@ -72,7 +77,4 @@ declare
       Man     
    end
    
-
-declare 
-GameGrid={Grid.newGridPort 10 10}
-Man = {NewMan GameGrid 1 5 5 blue}
+end
