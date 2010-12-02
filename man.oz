@@ -1,10 +1,18 @@
 declare
 %Ben
-[Grid] = {Module.link ['/Users/benoitdaccache/Documents/Programation/OZ/Bomberman/grid.ozf']}
-[Utils]= {Module.link ['/Users/benoitdaccache/Documents/Programation/OZ/Bomberman/utils.ozf']}
+Grid Utils
+{Browse {OS.uName}.sysname}
+
+%[Grid] = {Module.link ['/Users/benoitdaccache/Documents/Programation/OZ/Bomberman/grid.ozf']}
+%[Utils]= {Module.link ['/Users/benoitdaccache/Documents/Programation/OZ/Bomberman/utils.ozf']}
 % Raph
-%[Grid] = {Module.link ['grid.ozf']}
-%[Utils]= {Module.link ['utils.ozf']}
+if {OS.uName}.sysname=="Linux" then
+   [Grid] = {Module.link ['grid.ozf']}
+   [Utils]= {Module.link ['utils.ozf']}
+else
+   [Grid] = {Module.link ['/Users/benoitdaccache/Documents/Programation/OZ/Bomberman/grid.ozf']}
+   [Utils]= {Module.link ['/Users/benoitdaccache/Documents/Programation/OZ/Bomberman/utils.ozf']}
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % To implement
