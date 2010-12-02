@@ -38,6 +38,7 @@ define
 		   State
 		else
 		   case Msg of hitByBomb(color:Color) then
+		      {Browser.browse hittttttttttttttttttt}
 		      if Color==State.color then
 			 {Browser.browse deadByTeammate}
 			 {AdjoinList State [state#dead]}

@@ -46,12 +46,14 @@ define
       {Browser.browse 'Boummmmmmmmmm'}
       fun {DetonateBombAux Grid LPos}
 	 case LPos of H|T then
-	    O in O= {GetItemAt Grid H}
+	    GridTemp O in
+	    O= {GetItemAt Grid H}
 	    if O.type == normal then
-	       if
-	       {SendToAll {GetItemAt Grid H}.ports hitByBomb(color:Params.color)}
+	       %GridTemp = {ExplodeAllBombs Grid O.bombs}
+	       {Browser.browse gridexpl}{Browser.browse GridTemp}{Delay 5000}
+	       {SendToAll {GetItemAt GridTemp H}.ports hitByBomb(color:Params.color)}
 	    end
-	    {DetonateBombAux {UpdateItemAt Grid H [foods#0 bombs#0 ports#nil]} T}
+	    {DetonateBombAux {UpdateItemAt GridTemp H [foods#0 bombs#nil ports#nil]} T}
 	 else Grid
 	 end
       end
@@ -62,7 +64,15 @@ define
 	 T
       end
    end
-      
+
+   fun {ExplodeAllBombs Grid LBombs}
+      case LBombs of H|T then
+	 {ExplodeAllBombs {DetonateBomb Grid H.pos H} T}
+      else Grid
+      end
+   end
+   
+	         
    proc {SendToAll L M}
       case L of H|T then
 	 {Send H M}
@@ -166,7 +176,11 @@ define
    % Adds the bomb to the grid and stats a timer.
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    fun {AddBombToGrid Grid ManState Timer GridPort}
-      {GenericAdder Grid ManState.pos Timer GridPort bombs params(power:ManState.strength color:ManState.color)}
+      GridTemp Params in
+      Params = params(power:ManState.strength color:ManState.color)
+      GridTemp = {UpdateItemAt Grid ManState.pos [bombs#[b(power:ManState.strength color:ManState.color pos:ManState.pos) {GetItemAt Grid ManState.pos}.bombs]]}
+      {Send Timer startTimer(delay:1000 port:GridPort response:bombs#timer(pos:ManState.pos params:Params))}
+      GridTemp
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -202,7 +216,7 @@ define
       for I in 1..X do
 	 for J in 1..Y do
 	    T.I = {MakeTuple grid Y}
-	    T.I.J = block(type:normal bombs:0 foods:0 ports:nil)
+	    T.I.J = block(type:normal bombs:nil foods:0 ports:nil)
 	 end
       end
       {SetWallsInGrid T {RandomPositions 3 X Y}}
@@ -238,14 +252,10 @@ define
       end
    end
 
-
-   
-
    
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Returns the item (record) that is located on the block X Y of the grid
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   
    fun {GetItemAt Grid Pos}
       X Y in X= Pos.x
       Y =Pos.y
