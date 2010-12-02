@@ -51,13 +51,14 @@ fun {NewMan Grid Id X Y Color}
 		{Browse Msg}
 		{Browse L}
 		{Send State.grid movingTo(currentState:State dest:{ChooseMove L})}
+		{Send ManTimer startTimer(delay:{DelayFromStrength State.strength} port:Man response:canMove)}
 		State
 	     [] canMove then
-%		{Browse received_can_move}
-%		{Send State.grid askPossibilities(State)}
-		{Send State.grid placeBomb(manState:State)}
+		{Browse received_can_move}
+		{Send State.grid askPossibilities(State)}
+		%{Send State.grid placeBomb(manState:State)}
 		{Send ManTimer startTimer(delay:{DelayFromStrength State.strength} port:Man response:canMove)}
-		{Browse sent_place_bomb}
+		%{Browse sent_place_bomb}
 		State
 	     else {Browse Msg}State
 	     end
@@ -72,7 +73,14 @@ end
 
 declare
 {Browse a}
+<<<<<<< HEAD
 GameGrid={Grid.newGridPort 4 4}
 {Browse GameGrid}
 {Browse b}
 Man = {NewMan GameGrid 1 2 2 blue}
+=======
+GameGrid={Grid.newGridPort 3 3}
+{Browse GameGrid}
+{Browse b}
+Man = {NewMan GameGrid 1 0 0 blue}
+>>>>>>> a1b406f0445ee36415c87a40be83c303800a11f8

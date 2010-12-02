@@ -2,15 +2,13 @@ functor
 export
    newGridPort:NewGridPort
 import
-   %Utils
 % Raph
-   %if {OS.uName}.sysname=="Linux" then
-    %  Utils at 'file:///home/rb/etudes/Bomberman/utils.ozf'
-   %else
+%if {OS.uName}.sysname=="Linux" then
+   Utils at 'file:///home/rb/etudes/Bomberman/utils.ozf'
+%else
 % Ben   
-   %Utils at 'file://Users/benoitdaccache/Documents/Programation/OZ/Bomberman/utils.ozf'
-   Utils at 'utils.ozf'
-  % end
+%   Utils at 'file://Users/benoitdaccache/Documents/Programation/OZ/Bomberman/utils.ozf'
+%end
    Browser 
 
 define
@@ -25,7 +23,7 @@ define
 		 fun {$ Message Grid}
 		    {Browser.browse Grid}
 		    case Message of askPossibilities(ManState) then
-		       {Send ManState.man {PossibleMoves ManState}}
+		       {Send ManState.man {PossibleMoves ManState X Y}}
 		       Grid
 		    [] movingTo(currentState:ManState dest:Pos) then
 		       {Send ManState.man newManState(type:move state:{AdjoinList ManState [pos#Pos]})}
@@ -142,8 +140,33 @@ define
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Returns a list of possoble moves to the player depending on his position
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   fun {PossibleMoves ManState}
-      possibleMoves(moves:[pos(x:ManState.pos.x+1 y:ManState.pos.y+1) pos(x:ManState.pos.x-1 y:ManState.pos.y-1)])
+   fun {PossibleMoves ManState MaxX MaxY}
+      L1
+      L2
+      L3
+      L4
+   in
+      if ManState.pos.x+1<MaxX then
+	 L1=[pos(x:ManState.pos.x+1 y:ManState.pos.y)]
+      else
+	 L1=nil
+      end
+      if ManState.pos.x-1>0 then
+	 L2=[pos(x:ManState.pos.x-1 y:ManState.pos.y)]
+      else
+	 L2=nil
+      end
+      if ManState.pos.y+1<MaxY then
+	 L3=[pos(x:ManState.pos.x y:ManState.pos.y+1)]
+      else
+	 L3=nil
+      end
+      if ManState.pos.y-1>0 then
+	 L4= [pos(x:ManState.pos.x y:ManState.pos.y-1)]
+      else
+	 L4=nil
+      end
+      possibleMoves(moves: {AppendAll L1 L2 L3 L4})
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -253,7 +276,6 @@ define
       Temp
    end
 
-{Browser.browse hello}
    
 end
 
