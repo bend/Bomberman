@@ -4,10 +4,10 @@ export
 import
 % Raph
 %if {OS.uName}.sysname=="Linux" then
-   Utils at 'file:///home/rb/etudes/Bomberman/utils.ozf'
+  % Utils at 'utils.ozf'
 %else
 % Ben   
-%   Utils at 'file://Users/benoitdaccache/Documents/Programation/OZ/Bomberman/utils.ozf'
+   Utils at 'file://Users/benoitdaccache/Documents/Programation/OZ/Bomberman/utils.ozf'
 %end
    Browser 
 
@@ -26,6 +26,7 @@ define
 		       {Send ManState.man {PossibleMoves ManState X Y}}
 		       Grid
 		    [] movingTo(currentState:ManState dest:Pos) then
+		       {Browser.browse movingto}
 		       {Send ManState.man newManState(type:move state:{AdjoinList ManState [pos#Pos]})}
 		       {MovePort Grid ManState.pos Pos ManState.man}
 		    [] placeBomb(manState:ManState) then
@@ -141,12 +142,9 @@ define
    % Returns a list of possoble moves to the player depending on his position
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    fun {PossibleMoves ManState MaxX MaxY}
-      L1
-      L2
-      L3
-      L4
+      L1 L2 L3 L4
    in
-      if ManState.pos.x+1<MaxX then
+      if ManState.pos.x+1=<MaxX then
 	 L1=[pos(x:ManState.pos.x+1 y:ManState.pos.y)]
       else
 	 L1=nil
@@ -156,7 +154,7 @@ define
       else
 	 L2=nil
       end
-      if ManState.pos.y+1<MaxY then
+      if ManState.pos.y+1=<MaxY then
 	 L3=[pos(x:ManState.pos.x y:ManState.pos.y+1)]
       else
 	 L3=nil

@@ -1,86 +1,75 @@
 declare
-[Grid] = {Module.link ['grid.ozf']}
-[Utils]= {Module.link ['utils.ozf']}
+[Grid] = {Module.link ['/Users/benoitdaccache/Documents/Programation/OZ/Bomberman/grid.ozf']}
+[Utils] = {Module.link ['/Users/benoitdaccache/Documents/Programation/OZ/Bomberman/utils.ozf']}
 
 
+   
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % To implement
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-fun {DelayFromStrength Strength}
-   Strength*1000*3
-end
-fun {ChooseMove PossibleMoves}
-   PossibleMoves.1
-end
+   fun {DelayFromStrength Strength}
+      Strength*1000*3
+   end
+   fun {ChooseMove PossibleMoves}
+      PossibleMoves.1
+   end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % End to implement
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-fun {NewMan Grid Id X Y Color}
+   fun {NewMan Grid Id X Y Color}
    % Initialize state and man
-   {Browse man#a}
-   ManTimer = {Utils.timer}
-   State =  man(color:Color strength:1 state:waiting grid:Grid pos:pos(x:X y:Y) id:Id man:Man)
-   {Send Grid movingTo(currentState:State dest:pos(x:X y:Y))}
-   Man = {Utils.newPortObject
+      ManTimer = {Utils.timer}
+      State =  man(color:Color strength:1 state:waiting grid:Grid pos:pos(x:X y:Y) id:Id man:Man)
+      {Browse settingup}
+      {Send Grid movingTo(currentState:State dest:pos(x:X y:Y))}
+      Man = {Utils.newPortObject
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Man behaviour
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	  fun {$ Msg State}
-	     case Msg of hitByBomb(color:Color) then
-		if Color==State.color then
-		   {Browse dead}
-		   {Delay 10000}
-		   %{Send State.grid died(state: State)}
+	     fun {$ Msg State}
+		if State.state == dead then
 		   State
 		else
-		   {Browse deadO}
-		   {Delay 10000}
-		   {AdjoinList State [color#Color]}
+		   case Msg of hitByBomb(color:Color) then
+		      if Color==State.color then
+			 {Browse deadByTeammate}
+			 {AdjoinList State [state#dead]}
+		      else
+			 {Browse deadByOther}
+			 T in T = {AdjoinList State [color#Color]}
+			 {Send Grid movingTo(currentState:T dest:T.pos)}
+			 T
+		      end
+		   [] newManState(type:Type state:State) then
+                      % from grid
+                      % if update was due to a move, trigger new move request
+                      %if Type==move then
+		      %{Send ManTimer startTimer(delay:{DelayFromStrength State.strength} port:Man response:canMove)}
+		      %end
+		      State
+		   [] possibleMoves(moves:L) then
+		      {Send State.grid movingTo(currentState:State dest:{ChooseMove L})}
+		      {Send ManTimer startTimer(delay:{DelayFromStrength State.strength} port:Man response:canMove)}
+		      State
+		   [] canMove then
+		      {Browser.browse received_can_move}
+		      {Send State.grid placeBomb(manState:State)}%{Send State.grid askPossibilities(State)}
+		      {Send ManTimer startTimer(delay:{DelayFromStrength State.strength} port:Man response:canMove)}
+		      {Browse sent_place_bomb}
+		      {Delay 1000}
+		      State
+		   else
+		      {Browse Msg}
+		      State
+		   end
 		end
-	     [] newManState(type:Type state:State) then
-      % from grid
-      % if update was due to a move, trigger new move request
-		%if Type==move then
-		   %{Send ManTimer startTimer(delay:{DelayFromStrength State.strength} port:Man response:canMove)}
-		%end
-		State
-	     [] possibleMoves(moves:L) then
-      % from grid
-		{Browse Msg}
-		{Browse L}
-		{Send State.grid movingTo(currentState:State dest:{ChooseMove L})}
-		{Send ManTimer startTimer(delay:{DelayFromStrength State.strength} port:Man response:canMove)}
-		State
-	     [] canMove then
-		{Browse received_can_move}
-		{Send State.grid askPossibilities(State)}
-		%{Send State.grid placeBomb(manState:State)}
-		{Send ManTimer startTimer(delay:{DelayFromStrength State.strength} port:Man response:canMove)}
-		%{Browse sent_place_bomb}
-		State
-	     else {Browse Msg}State
-	     end
-	  end
-	  State }
-   {Browse man#b}
-   % Send request for first move
-   {Send ManTimer startTimer(delay:{DelayFromStrength 1} port:Man response:canMove)}
-in
-  Man     
-end
+	    end
+      State }
+      {Send ManTimer startTimer(delay:{DelayFromStrength 1} port:Man response:canMove)}% Send request for first move
+   in
+      Man     
+   end
+   
 
-declare
-{Browse a}
-<<<<<<< HEAD
-GameGrid={Grid.newGridPort 4 4}
-{Browse GameGrid}
-{Browse b}
-Man = {NewMan GameGrid 1 2 2 blue}
-=======
-GameGrid={Grid.newGridPort 3 3}
-{Browse GameGrid}
-{Browse b}
-Man = {NewMan GameGrid 1 0 0 blue}
->>>>>>> a1b406f0445ee36415c87a40be83c303800a11f8
