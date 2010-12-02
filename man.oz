@@ -32,11 +32,14 @@ fun {NewMan Grid Id X Y Color}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	  fun {$ Msg State}
 	     case Msg of hitByBomb(color:Color) then
-      % from grid
 		if Color==State.color then
-		   {Send State.grid died(state: State)}
+		   {Browse dead}
+		   {Delay 10000}
+		   %{Send State.grid died(state: State)}
 		   State
 		else
+		   {Browse deadO}
+		   {Delay 10000}
 		   {AdjoinList State [color#Color]}
 		end
 	     [] newManState(type:Type state:State) then
@@ -72,7 +75,7 @@ end
 
 declare
 {Browse a}
-GameGrid={Grid.newGridPort 10 10}
+GameGrid={Grid.newGridPort 4 4}
 {Browse GameGrid}
 {Browse b}
-Man = {NewMan GameGrid 1 5 5 blue}
+Man = {NewMan GameGrid 1 2 2 blue}
