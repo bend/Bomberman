@@ -31,7 +31,7 @@ fun {NewMan Grid Id X Y Color}
 % Man behaviour
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	  fun {$ Msg State}
-	     case Msg of explode(Color) then
+	     case Msg of hitByBomb(color:Color) then
       % from grid
 		if Color==State.color then
 		   {Send State.grid died(state: State)}
@@ -59,17 +59,6 @@ fun {NewMan Grid Id X Y Color}
 		{Send ManTimer startTimer(delay:{DelayFromStrength State.strength} port:Man response:canMove)}
 		{Browse sent_place_bomb}
 		State
-	     [] hitByBomb(color:Color) then
-		if Color == State.color then
-		   {Browse 'Dead'}
-		   {Delay 1000}
-		   State
-		else
-		   TState in
-		   TState = {AdjoinList State [color#Color strength#1]}
-		   {Send State.grid movingTo(currentState:TState dest:pos)}
-		   TState
-		end
 	     else {Browse Msg}State
 	     end
 	  end
