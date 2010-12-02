@@ -73,3 +73,6 @@ declare
    end
    
 
+declare 
+GameGrid={Grid.newGridPort 10 10}
+Man = {NewMan GameGrid 1 5 5 blue}
