@@ -1,11 +1,16 @@
+declare
+Utils
 functor
 export
    newGridPort:NewGridPort
 import
 % Raph
-%   Utils at 'file:///home/rb/etudes/Bomberman/utils.ozf'
+%if {OS.uName}.sysname=="Linux" then
+   Utils at 'file:///home/rb/etudes/Bomberman/utils.ozf'
+%else
 % Ben   
    Utils at 'file://Users/benoitdaccache/Documents/Programation/OZ/Bomberman/utils.ozf'
+%end
    Browser 
 
 define
