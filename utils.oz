@@ -44,6 +44,6 @@ define
    end
    
    fun {Tick}
-      100
+      500
    end
 end   
