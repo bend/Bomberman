@@ -211,12 +211,7 @@ define
    % Updates the Item At Pos with the list of Updates
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    fun {UpdateItemAt Grid Pos Updates}
-      NewList in
-      {Browser.browse {GetItemAt Grid Pos}}
-      NewList={AdjoinList {GetItemAt Grid Pos} Updates }
-      {Browser.browse newlist#NewList}
-      %{SetItemAt Grid Pos {AdjoinList {GetItemAt Grid Pos} Updates }}
-     {SetItemAt Grid Pos NewList}
+      {SetItemAt Grid Pos {AdjoinList {GetItemAt Grid Pos} Updates}}
    end
    
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
