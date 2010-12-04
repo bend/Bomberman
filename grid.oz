@@ -247,7 +247,7 @@ define
 	    T.I.J = block(type:normal bombs:0 foods:0 ports:nil)
 	 end
       end
-      List =  {RandomPositions 3 X Y}
+      List =  {RandomPositions 8 X Y}
       {Browser.browse walls_at#List}
 %      {SetWallsInGrid T {RandomPositions 3 X Y}}
        {SetWallsInGrid T List}
@@ -337,10 +337,13 @@ define
 	 {Board wall(Pos.x Pos.y)}
       end
    end
-	    
+
+
 
    
 end
+
+
 
 
 
