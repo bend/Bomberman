@@ -13,7 +13,7 @@ define
 % To implement
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    fun {DelayFromStrength Strength}
-      (Strength+1)*{Utils.tick}
+      (Strength+5)*{Utils.tick}
    end
    fun {ChooseMove PossibleMoves}
       I= {Utils.random 1 {Length PossibleMoves}}

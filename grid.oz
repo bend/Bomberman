@@ -24,11 +24,9 @@ define
 		    [] movingTo(currentState:ManState dest:Pos) then
 		       OldPos=ManState.pos
 		       StrengthIncrement={GetItemAt Grid Pos}.foods + {GetItemAt Grid OldPos}.foods
-		       %{Browser.browse itemat_pos#{GetItemAt Grid Pos}.foods }
-		       %{Browser.browse itemat_oldpos#{GetItemAt Grid OldPos}.foods }
 		       GridTemp NewGrid 
 		    in
-		       {Browser.browse movingFrom#ManState.color#OldPos#to#Pos}
+		       {Browser.browse movingFrom#ManState.color#OldPos#to#Pos#strength#ManState.strength}
 		       GridTemp={UpdateItemAt Grid OldPos [foods#0]}
                        NewGrid={UpdateItemAt Grid Pos [foods#0]}
 
@@ -219,7 +217,7 @@ define
    % Adds the bomb to the grid and stats a timer.
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    fun {AddBombToGrid Grid ManState Timer GridPort}
-      {GenericAdder Grid ManState.pos Timer GridPort bombs params(power:ManState.strength color:ManState.color delay:{Utils.tick}*10)}
+      {GenericAdder Grid ManState.pos Timer GridPort bombs params(power:ManState.strength color:ManState.color delay:{Utils.tick}*30)}
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
