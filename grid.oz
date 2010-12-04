@@ -304,10 +304,10 @@ define
 	 if Item.ports\=nil then
 	    {Board player(Item.ports.1.color Pos.x Pos.y)}
 	 else
-	    if Item.ports.food\=0 then
+	    if Item.foods\=0 then
 	       {Board food(Pos.x Pos.y)}
 	    else
-		  if Item.ports.bombs\=0 then
+		  if Item.bombs\=0 then
 		     {Board bomb(Pos.x Pos.y)}
 		  end
 	    end		  
