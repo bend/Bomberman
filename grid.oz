@@ -3,26 +3,35 @@ export
    newGridPort:NewGridPort
 import
    Utils at './utils.ozf'
+   GUI at './gui.ozf'
    Browser 
 
 define
+   Board
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Creates a new grid port and then excutes actions depending on the value received on the port
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    
    fun {NewGridPort X Y}
       GridPort T in
+      Board = {GUI.newBoard init(X Y)}
       T = {Utils.timer}
       GridPort= {Utils.newPortObject
 		 fun {$ Message Grid}
-		    {Browser.browse Grid}
+		    
 		    case Message of askPossibilities(ManState) then
 		       {Send ManState.man {PossibleMoves ManState X Y}}
 		       Grid
 		    [] movingTo(currentState:ManState dest:Pos) then
+		       NewGrid OldPos=ManState.pos in
 		       {Browser.browse movingto}
 		       {Send ManState.man newManState(type:move state:{AdjoinList ManState [pos#Pos]})}
-		       {MovePort Grid ManState.pos Pos ManState.man}
+		       {Browser.browse Grid}
+		       NewGrid = {MovePort Grid ManState.pos Pos ManState}
+		       {Browser.browse NewGrid}
+		       {Redraw NewGrid OldPos}
+		       {Redraw NewGrid Pos}
+		       NewGrid
 		    [] placeBomb(manState:ManState) then
 		       {AddBombToGrid Grid ManState T GridPort}
 		    []bombs#timer(pos:Pos params:Params) then
@@ -41,18 +50,20 @@ define
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Detonates the bomb, kills player that are affected
-   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    fun {DetonateBomb Grid Pos Params}
       {Browser.browse 'Boummmmmmmmmm'}
       fun {DetonateBombAux Grid LPos}
 	 case LPos of H|T then
-	    O in O= {GetItemAt Grid H}
-	    if O.type == normal then
-	       if
+	    Item in Item= {GetItemAt Grid H}
+	    if Item.type == normal then
 	       {SendToAll {GetItemAt Grid H}.ports hitByBomb(color:Params.color)}
+	       {DetonateBombAux {UpdateItemAt Grid H [foods#0 bombs#0 ports#nil]} T}
+	    else
+	       Grid
 	    end
-	    {DetonateBombAux {UpdateItemAt Grid H [foods#0 bombs#0 ports#nil]} T}
-	 else Grid
+	 else
+	    Grid
 	 end
       end
    in
@@ -62,10 +73,11 @@ define
 	 T
       end
    end
+   
       
    proc {SendToAll L M}
       case L of H|T then
-	 {Send H M}
+	 {Send H.port M}
 	 {SendToAll T M}
       else skip
       end
@@ -114,7 +126,8 @@ define
 	 end
       end
    in
-      {Remove {GetItemAt Grid Pos}.ports}
+      nil
+      %{Remove {GetItemAt Grid Pos}.ports}
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -127,10 +140,12 @@ define
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Modifies the grid by removing the 'man' from his oldPos and adds it to his newPos
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   fun {MovePort Grid OldPos NewPos Port}
+   fun {MovePort Grid OldPos NewPos ManState}
       GridTemp in
-      GridTemp = {UpdateItemAt Grid OldPos [ports#{RemovePort Grid OldPos Port}]}
-      {UpdateItemAt Grid NewPos  [ports#{AddPort GridTemp NewPos Port}]}
+      %GridTemp = {UpdateItemAt Grid OldPos [ports#{RemovePort Grid OldPos ManState.man}]}
+      GridTemp = {UpdateItemAt Grid OldPos [ports#nil]}
+
+      {UpdateItemAt Grid NewPos  [ports#{AddPort GridTemp NewPos man(port:ManState.man color:ManState.color)}]}
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -268,6 +283,27 @@ define
       end
       Temp
    end
+
+   proc {Redraw Grid Pos}
+      
+      Item={GetItemAt Grid Pos}
+   in
+      {Board reset(Pos.x Pos.y)}
+      if Item.type==normal then
+	 if Item.ports\=nil then
+	    {Board player(Item.ports.1.color Pos.x Pos.y)}
+	 else
+	    if Item.ports.food\=0 then
+	       {Board food(Pos.x Pos.y)}
+	    else
+		  if Item.ports.bombs\=0 then
+		     {Board bomb(Pos.x Pos.y)}
+		  end
+	    end		  
+	 end
+      end
+   end
+	    
 
    
 end

@@ -4,6 +4,8 @@ import
    System 
    QTk at 'x-oz://system/wp/QTk.ozf'
    OS
+export
+  newBoard:NewBoard
 define
 
    %% Default values
@@ -87,16 +89,22 @@ define
       meth bomb(X Y) Img in
 	 {@grid configure(label(image:@bomb) row:X+X-1 column:Y+Y-1)}
       end
+      meth food(X Y) Img in
+	 {@grid configure(label(image:@food) row:X+X-1 column:Y+Y-1)}
+      end
 
       meth reset(X Y)
 	 {@grid configure(label(image:@bg) row:X+X-1 column:Y+Y-1)}
       end
    end
+fun {NewBoard Init}
+   {NewActive Gui Init}
+end
 
    %% create the GUI object
-   G = {NewActive Gui init(Args.height Args.width)}
-   {G player(a 5 5)}
-   {G bomb(5 5)}
-   {G reset(5 5)}
-   {G score(a 4)}
+%   G = {NewActive Gui init(Args.height Args.width)}
+%   {G player(a 5 5)}
+%   {G bomb(5 5)}
+%   {G reset(5 5)}
+%   {G score(a 4)}
 end

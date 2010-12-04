@@ -60,9 +60,10 @@ define
 		      State
 		   [] canMove then
 		      {Browser.browse received_can_move}
-		      {Send State.grid placeBomb(manState:State)}%{Send State.grid askPossibilities(State)}
+		      %{Send State.grid placeBomb(manState:State)}
+		      {Send State.grid askPossibilities(State)}
 		      {Send ManTimer startTimer(delay:{DelayFromStrength State.strength} port:Man response:canMove)}
-		      {Browser.browse sent_place_bomb}
+		      %{Browser.browse sent_place_bomb}
 		      {Delay 1000}
 		      State
 		   else
