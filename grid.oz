@@ -24,18 +24,21 @@ define
 		       Grid
 		    [] movingTo(currentState:ManState dest:Pos) then
 		       NewGrid OldPos=ManState.pos in
-		       {Browser.browse movingto}
+		       {Browser.browse movingto#Pos#fro#OldPos}
+
 		       {Send ManState.man newManState(type:move state:{AdjoinList ManState [pos#Pos]})}
-		       {Browser.browse Grid}
+		       
 		       NewGrid = {MovePort Grid ManState.pos Pos ManState}
-		       {Browser.browse NewGrid}
+		       {Browser.browse {GetItemAt NewGrid OldPos}}
+		       {Browser.browse {GetItemAt NewGrid Pos}}
+		       
 		       {Redraw NewGrid OldPos}
 		       {Redraw NewGrid Pos}
 		       NewGrid
 		    [] placeBomb(manState:ManState) then
 		       {AddBombToGrid Grid ManState T GridPort}
 		    []bombs#timer(pos:Pos params:Params) then
-		       {Browser.browse got_bombs_event}
+		   
 		       {DetonateBomb Grid Pos Params}
 		    []foods#timer(pos:Pos) then
 		       {UpdateItemAt Grid Pos [foods#{GetItemAt Grid Pos}.foods -1]}
@@ -126,9 +129,10 @@ define
 	 end
       end
    in
-      nil
+
       %{Remove {GetItemAt Grid Pos}.ports}
-       {UpdateItemAt Grid Pos  [ports#nil]}
+      nil
+     
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -146,7 +150,8 @@ define
       %GridTemp = {UpdateItemAt Grid OldPos [ports#{RemovePort Grid OldPos ManState.man}]}
       GridTemp = {UpdateItemAt Grid OldPos [ports#nil]}
 
-      {UpdateItemAt Grid NewPos  [ports#{AddPort GridTemp NewPos man(port:ManState.man color:ManState.color)}]}
+
+      {UpdateItemAt GridTemp NewPos  [ports#{AddPort GridTemp NewPos man(port:ManState.man color:ManState.color)}]}
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -206,7 +211,12 @@ define
    % Updates the Item At Pos with the list of Updates
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    fun {UpdateItemAt Grid Pos Updates}
-      {SetItemAt Grid Pos {AdjoinList {GetItemAt Grid Pos} Updates }}
+      NewList in
+      {Browser.browse {GetItemAt Grid Pos}}
+      NewList={AdjoinList {GetItemAt Grid Pos} Updates }
+      {Browser.browse newlist#NewList}
+      %{SetItemAt Grid Pos {AdjoinList {GetItemAt Grid Pos} Updates }}
+     {SetItemAt Grid Pos NewList}
    end
    
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

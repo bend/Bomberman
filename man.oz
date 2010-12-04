@@ -16,7 +16,7 @@ define
       Strength*1000*3
    end
    fun {ChooseMove PossibleMoves}
-      PossibleMoves.1
+      PossibleMoves.2.1
    end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % End to implement
@@ -62,7 +62,7 @@ define
 		      {Browser.browse received_can_move}
 		      %{Send State.grid placeBomb(manState:State)}
 		      {Send State.grid askPossibilities(State)}
-		      {Send ManTimer startTimer(delay:{DelayFromStrength State.strength} port:Man response:canMove)}
+		      %{Send ManTimer startTimer(delay:{DelayFromStrength State.strength} port:Man response:canMove)}
 		      %{Browser.browse sent_place_bomb}
 		      {Delay 1000}
 		      State
