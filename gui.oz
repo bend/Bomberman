@@ -33,7 +33,7 @@ define
    class Gui
       attr grid
 	 scorea scoreb
-	 playera playerb bomb food bg
+	 playera playerb bomb food bg wall
       meth init(H W)
 	 CD = {OS.getCWD}
 	 Grid ScoreA ScoreB
@@ -63,6 +63,7 @@ define
 	 playera :=  {QTk.newImage photo(file:CD#'/playerA.gif')}
 	 playerb := {QTk.newImage photo(file:CD#'/playerB.gif')}
 	 food := {QTk.newImage photo(file:CD#'/food.gif')}
+	 wall := {QTk.newImage photo(file:CD#'/wall.gif')}
 	 bomb := {QTk.newImage photo(file:CD#'/bomb.gif')}
 	 bg := {QTk.newImage photo(file:CD#'/white.gif')}
       end
@@ -91,6 +92,9 @@ define
       end
       meth food(X Y) Img in
 	 {@grid configure(label(image:@food) row:X+X-1 column:Y+Y-1)}
+      end
+      meth wall(X Y) Img in
+	 {@grid configure(label(image:@wall) row:X+X-1 column:Y+Y-1)}
       end
 
       meth reset(X Y)

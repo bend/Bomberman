@@ -13,10 +13,12 @@ define
 % To implement
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    fun {DelayFromStrength Strength}
-      Strength*1000*3
+      Strength*100*3
    end
    fun {ChooseMove PossibleMoves}
-      PossibleMoves.2.1
+      I= {Utils.random 1 {Length PossibleMoves}}
+   in
+      {Nth PossibleMoves I}
    end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % End to implement
@@ -64,7 +66,7 @@ define
 		      {Send State.grid askPossibilities(State)}
 		      %{Send ManTimer startTimer(delay:{DelayFromStrength State.strength} port:Man response:canMove)}
 		      %{Browser.browse sent_place_bomb}
-		      {Delay 1000}
+		      %{Delay 1000}
 		      State
 		   else
 		      {Browser.browse Msg}

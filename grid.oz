@@ -20,7 +20,7 @@ define
 		 fun {$ Message Grid}
 		    
 		    case Message of askPossibilities(ManState) then
-		       {Send ManState.man {PossibleMoves ManState X Y}}
+		       {Send ManState.man {PossibleMoves Grid ManState X Y}}
 		       Grid
 		    [] movingTo(currentState:ManState dest:Pos) then
 		       NewGrid OldPos=ManState.pos in
@@ -153,29 +153,54 @@ define
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Returns a list of possoble moves to the player depending on his position
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   fun {PossibleMoves ManState MaxX MaxY}
+   fun {PossibleMoves Grid ManState MaxX MaxY}
       L1 L2 L3 L4
    in
-      if ManState.pos.x+1=<MaxX then
-	 L1=[pos(x:ManState.pos.x+1 y:ManState.pos.y)]
+      if ManState.pos.x+1=<MaxX  then
+	 Dest = {GetItemAt Grid pos(x:ManState.pos.x+1 y:ManState.pos.y)}
+      in
+	 if Dest.ports==nil andthen Dest.type==normal then
+	    L1=[pos(x:ManState.pos.x+1 y:ManState.pos.y)]
+	 else
+	    L1=nil
+	 end
       else
 	 L1=nil
       end
-      if ManState.pos.x-1>0 then
-	 L2=[pos(x:ManState.pos.x-1 y:ManState.pos.y)]
+      if ManState.pos.x-1>0   then
+	 Dest = {GetItemAt Grid pos(x:ManState.pos.x-1 y:ManState.pos.y)}
+      in
+	 if Dest.ports==nil andthen Dest.type==normal then
+	    L2=[pos(x:ManState.pos.x-1 y:ManState.pos.y)]
+	 else
+	    L2=nil
+	 end
       else
 	 L2=nil
       end
-      if ManState.pos.y+1=<MaxY then
-	 L3=[pos(x:ManState.pos.x y:ManState.pos.y+1)]
+      if ManState.pos.y+1=<MaxY   then
+	 Dest = {GetItemAt Grid pos(x:ManState.pos.x y:ManState.pos.y+1)}
+      in
+	 if Dest.ports==nil andthen Dest.type==normal then
+	    L3=[pos(x:ManState.pos.x y:ManState.pos.y+1)]
+	 else
+	    L3=nil
+	 end
       else
 	 L3=nil
       end
-      if ManState.pos.y-1>0 then
-	 L4= [pos(x:ManState.pos.x y:ManState.pos.y-1)]
+      if ManState.pos.y-1>0   then
+	 Dest={GetItemAt Grid pos(x:ManState.pos.x y:ManState.pos.y-1)}
+      in
+	 if Dest.ports==nil andthen Dest.type==normal then
+	    L4= [pos(x:ManState.pos.x y:ManState.pos.y-1)]
+	 else
+	    L4=nil
+	 end
       else
 	 L4=nil
       end
+      {Browser.browse L1#L2#L3#L4}
       possibleMoves(moves: {AppendAll L1 L2 L3 L4})
    end
 
@@ -214,7 +239,7 @@ define
    % Returns a new Grid depending of X*Y
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    fun {NewGrid X Y}
-      T in
+      T List in
       T = {MakeTuple grid X}
       for I in 1..X do
 	 for J in 1..Y do
@@ -222,7 +247,10 @@ define
 	    T.I.J = block(type:normal bombs:0 foods:0 ports:nil)
 	 end
       end
-      {SetWallsInGrid T {RandomPositions 3 X Y}}
+      List =  {RandomPositions 3 X Y}
+      {Browser.browse walls_at#List}
+%      {SetWallsInGrid T {RandomPositions 3 X Y}}
+       {SetWallsInGrid T List}
    end
 
    fun {NewEmptyGrid X Y}
@@ -241,10 +269,10 @@ define
    fun {SetWallsInGrid Grid L}
       case L of H|T then
 	 {Browser.browse setting_wall_at#H}
-	 Z Tep in
+	 Z in
 	 Z = {UpdateItemAt Grid H [type#wall]}
-	 Tep={SetWallsInGrid Z T}
-	 Tep
+	 {Redraw Z H}
+	 {SetWallsInGrid Z T}	 
       else Grid end
    end
 
@@ -291,6 +319,7 @@ define
       Item={GetItemAt Grid Pos}
    in
       {Board reset(Pos.x Pos.y)}
+      {Browser.browse redraw_type#Item.type}
       if Item.type==normal then
 	 if Item.ports\=nil then
 	    {Board player(Item.ports.1.color Pos.x Pos.y)}
@@ -303,6 +332,9 @@ define
 		  end
 	    end		  
 	 end
+      else
+	 {Browser.browse setting_wall_in_ui_at#Pos}
+	 {Board wall(Pos.x Pos.y)}
       end
    end
 	    
