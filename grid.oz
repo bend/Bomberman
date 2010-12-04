@@ -22,10 +22,19 @@ define
 		       {Send ManState.man {PossibleMoves Grid ManState X Y}}
 		       Grid
 		    [] movingTo(currentState:ManState dest:Pos) then
-		       NewGrid OldPos=ManState.pos in
+		       OldPos=ManState.pos
+		       StrengthIncrement={GetItemAt Grid Pos}.foods + {GetItemAt Grid OldPos}.foods
+		       %{Browser.browse itemat_pos#{GetItemAt Grid Pos}.foods }
+		       %{Browser.browse itemat_oldpos#{GetItemAt Grid OldPos}.foods }
+		       GridTemp NewGrid 
+		    in
 		       {Browser.browse movingFrom#ManState.color#OldPos#to#Pos}
-		       {Send ManState.man newManState(type:move state:{AdjoinList ManState [pos#Pos]})}
-		       {MovePort Grid ManState.pos Pos ManState}
+		       GridTemp={UpdateItemAt Grid OldPos [foods#0]}
+                       NewGrid={UpdateItemAt Grid Pos [foods#0]}
+
+		       {Send ManState.man newManState(type:move state:{AdjoinList ManState [pos#Pos strength#ManState.strength+StrengthIncrement]})}
+		       
+		       {MovePort NewGrid ManState.pos Pos ManState}
 		    [] placeBomb(manState:ManState) then
 		       {AddBombToGrid Grid ManState T GridPort}
 		    []bombs#timer(pos:Pos params:Params) then
@@ -48,7 +57,6 @@ define
    % Detonates the bomb, kills player that are affected
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    fun {DetonateBomb Grid Pos Params}
-%      {Browser.browse 'Boummmmmmmmmm'}
       fun {DetonateBombAux Grid LPos}
 	 case LPos of H|T then
 	    Item in Item= {GetItemAt Grid H}
@@ -79,6 +87,8 @@ define
 
    fun {RandomFoodPos Grid}
       X Y in
+      {Browser.browse width_grid#{Width Grid}}
+      {Browser.browse height_grid#{Width Grid.1}}
       X = {Utils.random 1 {Width Grid}}
       Y = {Utils.random 1 {Width Grid.1}}
       if {GetItemAt Grid pos(x:X y:Y)}.type \= normal then
@@ -100,12 +110,16 @@ define
 
 
    fun {GetAffectedPos Grid Pos Power}
-      L1 L2 L3 L4 in
+      L1 L2 L3 L4 Temp in
+      {Browser.browse start_list_affected_pos}
       thread L1 = Pos|{ListAffectedPos Grid pos(x:Pos.x+1 y:Pos.y) x plus Power-1} end %we add the current position
       thread L2 = {ListAffectedPos Grid pos(x:Pos.x-1 y:Pos.y) x minus Power-1} end
       thread L3 = {ListAffectedPos Grid pos(x:Pos.x y:Pos.y+1) y plus Power-1} end
       thread L4 = {ListAffectedPos Grid pos(x:Pos.x y:Pos.y-1) y minus Power-1} end
-      {AppendAll L1 L2 L3 L4}
+      {Browser.browse l#L1#L2#L3#L4}
+      Temp = {AppendAll L1 L2 L3 L4}
+      {Browser.browse affected#Temp}
+      Temp
    end
 
    fun {AppendAll L1 L2 L3 L4}
@@ -113,14 +127,18 @@ define
    end
 
    fun {ListAffectedPos Grid Pos Axis Dir Power}
-      if Power < 0 then nil
+      if Power < 0 orelse Pos.x>{Width Grid} orelse Pos.x<1 orelse Pos.y>{Width Grid.1} orelse Pos.y<1 then nil
       else
 	 if {GetItemAt Grid Pos}.type == wall then  nil
 	 else
 	    NewCoord in 
 	    if Dir == minus then NewCoord = Pos.Axis -1
-	    else NewCoord = Pos.Axis +1 end    
-	    Pos|{ListAffectedPos Grid {AdjoinList Pos [Axis#NewCoord]} Axis Dir Power-1}
+	    else NewCoord = Pos.Axis +1 end
+	    if NewCoord==0 orelse NewCoord>{Width Grid} then
+	       nil
+	    else
+	       Pos|{ListAffectedPos Grid {AdjoinList Pos [Axis#NewCoord]} Axis Dir Power-1}
+	    end
 	 end
       end
    end
