@@ -4,6 +4,7 @@ export
    newPortObject2:NewPortObject2
    timer:Timer
    random:Random
+   tick:Tick
 import
    OS
 define
@@ -42,4 +43,7 @@ define
       Min + {OS.rand } mod (Max+1-Min)
    end
    
+   fun {Tick}
+      1000
+   end
 end   

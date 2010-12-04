@@ -13,12 +13,24 @@ define
 % To implement
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    fun {DelayFromStrength Strength}
-      Strength*100*3
+      (Strength+1)*{Utils.tick}
    end
    fun {ChooseMove PossibleMoves}
       I= {Utils.random 1 {Length PossibleMoves}}
    in
       {Nth PossibleMoves I}
+   end
+   fun {DecideToPutBomb ManState}
+      if ManState.strength>0 then
+	 if {Utils.random 1 10}>7 then
+	    {Browser.browse will_put_bomb}
+	    true
+	 else
+	    false
+	 end
+      else
+	 false
+      end
    end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % End to implement
@@ -61,13 +73,18 @@ define
 		      {Send ManTimer startTimer(delay:{DelayFromStrength State.strength} port:Man response:canMove)}
 		      State
 		   [] canMove then
-		      {Browser.browse received_can_move}
-		      %{Send State.grid placeBomb(manState:State)}
-		      {Send State.grid askPossibilities(State)}
-		      %{Send ManTimer startTimer(delay:{DelayFromStrength State.strength} port:Man response:canMove)}
-		      %{Browser.browse sent_place_bomb}
-		      %{Delay 1000}
-		      State
+		      if {DecideToPutBomb State} then NewState in
+			 {Send State.grid placeBomb(manState:State)}
+			 {Send ManTimer startTimer(delay:{DelayFromStrength State.strength} port:Man response:canMove)}
+			 {Browser.browse sent_place_bomb}
+			 {Browser.browse new_strength#State.strength-1}
+			 NewState = {AdjoinList State [strength#(State.strength-1)]}
+			 {Browser.browse new_state#NewState}
+			 NewState
+		      else
+			 {Send State.grid askPossibilities(State)}
+			 State
+		      end
 		   else
 		      {Browser.browse Msg}
 		      State

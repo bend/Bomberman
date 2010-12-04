@@ -33,7 +33,7 @@ define
 		    [] placeBomb(manState:ManState) then
 		       {AddBombToGrid Grid ManState T GridPort}
 		    []bombs#timer(pos:Pos params:Params) then
-		   
+		       {Browser.browse detonate_bomb_at#Pos}
 		       {DetonateBomb Grid Pos Params}
 		    []foods#timer(pos:Pos) then
 		       {UpdateItemAt Grid Pos [foods#{GetItemAt Grid Pos}.foods -1]}
@@ -177,7 +177,6 @@ define
       L2 = {MovesListInDir ManState.pos x minus}
       L3 = {MovesListInDir ManState.pos y plus}
       L4 = {MovesListInDir ManState.pos y minus}
-      {Browser.browse ManState.pos#'____'#L1#L2#L3#L4}
       possibleMoves(moves: {AppendAll L1 L2 L3 L4})
    end
 
@@ -185,7 +184,7 @@ define
    % Adds the bomb to the grid and stats a timer.
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    fun {AddBombToGrid Grid ManState Timer GridPort}
-      {GenericAdder Grid ManState.pos Timer GridPort bombs params(power:ManState.strength color:ManState.color)}
+      {GenericAdder Grid ManState.pos Timer GridPort bombs params(power:ManState.strength color:ManState.color delay:{Utils.tick}*10)}
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -201,7 +200,7 @@ define
    fun {GenericAdder Grid Pos Timer GridPort Type Params}
       GridTemp in
       GridTemp = {UpdateItemAt Grid Pos [Type#{GetItemAt Grid Pos}.Type+1]}
-      {Send Timer startTimer(delay:1000 port:GridPort response:Type#timer(pos:Pos params:Params))}
+      {Send Timer startTimer(delay:Params.delay port:GridPort response:Type#timer(pos:Pos params:Params))}
       GridTemp
    end
 
