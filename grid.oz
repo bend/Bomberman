@@ -24,18 +24,17 @@ define
 		    [] movingTo(currentState:ManState dest:Pos) then
 		       NewGrid OldPos=ManState.pos in
 		       {Browser.browse movingFrom#ManState.color#OldPos#to#Pos}
-		       {Send ManState.man newManState(type:move state:{AdjoinList ManState [pos#Pos]})}		     
-		       NewGrid = {MovePort Grid ManState.pos Pos ManState}
-		       {Redraw NewGrid OldPos}
-		       {Redraw NewGrid Pos}
-		       NewGrid
+		       {Send ManState.man newManState(type:move state:{AdjoinList ManState [pos#Pos]})}
+		       {MovePort Grid ManState.pos Pos ManState}
 		    [] placeBomb(manState:ManState) then
 		       {AddBombToGrid Grid ManState T GridPort}
 		    []bombs#timer(pos:Pos params:Params) then
 		       {Browser.browse detonate_bomb_at#Pos}
 		       {DetonateBomb Grid Pos Params}
-		    []foods#timer(pos:Pos) then
-		       {AddFoodToGrid {UpdateItemAt Grid Pos [foods#{GetItemAt Grid Pos}.foods -1]} {RandomFoodPos Grid} Timer GridPort}
+		    []foods#timer(pos:Pos params:Params) then TempGrid in
+		       {Browser.browse food_rotten_cleanup}
+		       TempGrid = {UpdateItemAt Grid Pos [foods#{GetItemAt Grid Pos}.foods -1]}
+		       {AddFoodToGrid TempGrid {RandomFoodPos TempGrid} T GridPort}
 		    else
 		       {Browser.browse got_unmanaged_message#Message}
 		       Grid
@@ -80,8 +79,8 @@ define
 
    fun {RandomFoodPos Grid}
       X Y in
-      X = {Utils.rand 1 {Width Grid}}
-      Y = {Utils.rand 1 {Width Grid.1}}
+      X = {Utils.random 1 {Width Grid}}
+      Y = {Utils.random 1 {Width Grid.1}}
       if {GetItemAt Grid pos(x:X y:Y)}.type \= normal then
 	 {RandomFoodPos Grid}
       else pos(x:X y:Y)
@@ -209,7 +208,7 @@ define
    % Adds the food to the grid and stats a timer.
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    fun {AddFoodToGrid Grid Pos Timer GridPort}
-      {GenericAdder Grid Pos Timer GridPort foods nil}
+      {GenericAdder Grid Pos Timer GridPort foods params(delay:{Utils.tick}*20)}
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -226,7 +225,10 @@ define
    % Updates the Item At Pos with the list of Updates
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    fun {UpdateItemAt Grid Pos Updates}
-      {SetItemAt Grid Pos {AdjoinList {GetItemAt Grid Pos} Updates}}
+      NewGrid in
+      NewGrid = {SetItemAt Grid Pos {AdjoinList {GetItemAt Grid Pos} Updates}}
+      {Redraw NewGrid Pos}
+      NewGrid
    end
    
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -261,7 +263,7 @@ define
       case L of H|T then
 	 Z in
 	 Z = {UpdateItemAt Grid H [type#wall]}
-	 {Redraw Z H}
+	 %{Redraw Z H}
 	 {SetWallsInGrid Z T}	 
       else Grid end
    end
