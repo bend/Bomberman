@@ -128,6 +128,7 @@ define
    in
       nil
       %{Remove {GetItemAt Grid Pos}.ports}
+       {UpdateItemAt Grid Pos  [ports#nil]}
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
