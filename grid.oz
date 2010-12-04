@@ -12,13 +12,12 @@ define
    % Creates a new grid port and then excutes actions depending on the value received on the port
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    
-   fun {NewGridPort X Y}
+   fun {NewGridPort X Y Foods Walls}
       GridPort T in
       Board = {GUI.newBoard init(X Y)}
       T = {Utils.timer}
       GridPort= {Utils.newPortObject
 		 fun {$ Message Grid}
-		    
 		    case Message of askPossibilities(ManState) then
 		       {Send ManState.man {PossibleMoves Grid ManState X Y}}
 		       Grid
@@ -36,13 +35,13 @@ define
 		       {Browser.browse detonate_bomb_at#Pos}
 		       {DetonateBomb Grid Pos Params}
 		    []foods#timer(pos:Pos) then
-		       {UpdateItemAt Grid Pos [foods#{GetItemAt Grid Pos}.foods -1]}
+		       {AddFoodToGrid {UpdateItemAt Grid Pos [foods#{GetItemAt Grid Pos}.foods -1]} {RandomFoodPos Grid} Timer GridPort}
 		    else
 		       {Browser.browse got_unmanaged_message#Message}
 		       Grid
 		    end
 		 end
-		 {NewGrid X Y}}
+		 {InitiateFoods {NewGrid X Y Walls} Foods T GridPort}}
    end
 
 
@@ -70,6 +69,25 @@ define
 	 T
       end
    end
+
+   fun {InitiateFoods Grid Foods Timer GridPort}
+      if Foods == 0 then
+	 Grid
+      else
+	 {InitiateFoods {AddFoodToGrid Grid {RandomFoodPos Grid} Timer GridPort} Foods-1 Timer GridPort}
+      end
+   end
+
+   fun {RandomFoodPos Grid}
+      X Y in
+      X = {Utils.rand 1 {Width Grid}}
+      Y = {Utils.rand 1 {Width Grid.1}}
+      if {GetItemAt Grid pos(x:X y:Y)}.type \= normal then
+	 {RandomFoodPos Grid}
+      else pos(x:X y:Y)
+      end
+   end
+   
    
       
    proc {SendToAll L M}
@@ -214,7 +232,7 @@ define
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Returns a new Grid depending of X*Y
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   fun {NewGrid X Y}
+   fun {NewGrid X Y Walls}
       T List in
       T = {MakeTuple grid X}
       for I in 1..X do
@@ -223,9 +241,7 @@ define
 	    T.I.J = block(type:normal bombs:0 foods:0 ports:nil)
 	 end
       end
-      List =  {RandomPositions 8 X Y}
-%      {SetWallsInGrid T {RandomPositions 3 X Y}}
-       {SetWallsInGrid T List}
+      {SetWallsInGrid T {RandomPositions Walls X Y}}
    end
 
    fun {NewEmptyGrid X Y}
