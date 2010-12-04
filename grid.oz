@@ -24,14 +24,9 @@ define
 		       Grid
 		    [] movingTo(currentState:ManState dest:Pos) then
 		       NewGrid OldPos=ManState.pos in
-		       {Browser.browse movingto#Pos#fro#OldPos}
-
-		       {Send ManState.man newManState(type:move state:{AdjoinList ManState [pos#Pos]})}
-		       
+		       {Browser.browse movingFrom#ManState.color#OldPos#to#Pos}
+		       {Send ManState.man newManState(type:move state:{AdjoinList ManState [pos#Pos]})}		     
 		       NewGrid = {MovePort Grid ManState.pos Pos ManState}
-		       {Browser.browse {GetItemAt NewGrid OldPos}}
-		       {Browser.browse {GetItemAt NewGrid Pos}}
-		       
 		       {Redraw NewGrid OldPos}
 		       {Redraw NewGrid Pos}
 		       NewGrid
@@ -55,7 +50,7 @@ define
    % Detonates the bomb, kills player that are affected
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    fun {DetonateBomb Grid Pos Params}
-      {Browser.browse 'Boummmmmmmmmm'}
+%      {Browser.browse 'Boummmmmmmmmm'}
       fun {DetonateBombAux Grid LPos}
 	 case LPos of H|T then
 	    Item in Item= {GetItemAt Grid H}
@@ -72,7 +67,6 @@ define
    in
       local T in
 	 T = {DetonateBombAux Grid {GetAffectedPos Grid Pos Params.power}}
-	 {Browser.browse T}
 	 T
       end
    end
@@ -155,52 +149,35 @@ define
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    fun {PossibleMoves Grid ManState MaxX MaxY}
       L1 L2 L3 L4
+      fun {MovesListInDir Pos Axis Dir}
+	 NewPos
+	 Max=max(x:MaxX y:MaxY)
+	 Dest
+	 Index
+      in
+	 if Dir==plus then
+	    Index=ManState.pos.Axis+1
+	 else
+	    Index=ManState.pos.Axis-1
+	 end
+	 if Index==0 orelse Index>Max.Axis then
+	    nil
+	 else
+	    NewPos={AdjoinList ManState.pos [Axis#Index]}
+	    Dest = {GetItemAt Grid NewPos}
+	    if Dest.ports==nil andthen Dest.type==normal then
+	       [NewPos]
+	    else
+	       nil
+	    end
+	 end
+      end
    in
-      if ManState.pos.x+1=<MaxX  then
-	 Dest = {GetItemAt Grid pos(x:ManState.pos.x+1 y:ManState.pos.y)}
-      in
-	 if Dest.ports==nil andthen Dest.type==normal then
-	    L1=[pos(x:ManState.pos.x+1 y:ManState.pos.y)]
-	 else
-	    L1=nil
-	 end
-      else
-	 L1=nil
-      end
-      if ManState.pos.x-1>0   then
-	 Dest = {GetItemAt Grid pos(x:ManState.pos.x-1 y:ManState.pos.y)}
-      in
-	 if Dest.ports==nil andthen Dest.type==normal then
-	    L2=[pos(x:ManState.pos.x-1 y:ManState.pos.y)]
-	 else
-	    L2=nil
-	 end
-      else
-	 L2=nil
-      end
-      if ManState.pos.y+1=<MaxY   then
-	 Dest = {GetItemAt Grid pos(x:ManState.pos.x y:ManState.pos.y+1)}
-      in
-	 if Dest.ports==nil andthen Dest.type==normal then
-	    L3=[pos(x:ManState.pos.x y:ManState.pos.y+1)]
-	 else
-	    L3=nil
-	 end
-      else
-	 L3=nil
-      end
-      if ManState.pos.y-1>0   then
-	 Dest={GetItemAt Grid pos(x:ManState.pos.x y:ManState.pos.y-1)}
-      in
-	 if Dest.ports==nil andthen Dest.type==normal then
-	    L4= [pos(x:ManState.pos.x y:ManState.pos.y-1)]
-	 else
-	    L4=nil
-	 end
-      else
-	 L4=nil
-      end
-      {Browser.browse L1#L2#L3#L4}
+      L1 = {MovesListInDir ManState.pos x plus}
+      L2 = {MovesListInDir ManState.pos x minus}
+      L3 = {MovesListInDir ManState.pos y plus}
+      L4 = {MovesListInDir ManState.pos y minus}
+      {Browser.browse ManState.pos#'____'#L1#L2#L3#L4}
       possibleMoves(moves: {AppendAll L1 L2 L3 L4})
    end
 
@@ -248,7 +225,6 @@ define
 	 end
       end
       List =  {RandomPositions 8 X Y}
-      {Browser.browse walls_at#List}
 %      {SetWallsInGrid T {RandomPositions 3 X Y}}
        {SetWallsInGrid T List}
    end
@@ -268,7 +244,6 @@ define
 
    fun {SetWallsInGrid Grid L}
       case L of H|T then
-	 {Browser.browse setting_wall_at#H}
 	 Z in
 	 Z = {UpdateItemAt Grid H [type#wall]}
 	 {Redraw Z H}
@@ -315,11 +290,9 @@ define
    end
 
    proc {Redraw Grid Pos}
-      
       Item={GetItemAt Grid Pos}
    in
       {Board reset(Pos.x Pos.y)}
-      {Browser.browse redraw_type#Item.type}
       if Item.type==normal then
 	 if Item.ports\=nil then
 	    {Board player(Item.ports.1.color Pos.x Pos.y)}
@@ -333,7 +306,6 @@ define
 	    end		  
 	 end
       else
-	 {Browser.browse setting_wall_in_ui_at#Pos}
 	 {Board wall(Pos.x Pos.y)}
       end
    end

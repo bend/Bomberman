@@ -39,7 +39,7 @@ define
    end
 
    fun {Random Min Max}
-      Min + {OS.rand } mod (Max-Min)
+      Min + {OS.rand } mod (Max+1-Min)
    end
    
 end   
