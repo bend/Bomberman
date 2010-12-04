@@ -129,10 +129,8 @@ define
 	 end
       end
    in
-
       %{Remove {GetItemAt Grid Pos}.ports}
       nil
-     
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -147,10 +145,8 @@ define
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    fun {MovePort Grid OldPos NewPos ManState}
       GridTemp in
-      %GridTemp = {UpdateItemAt Grid OldPos [ports#{RemovePort Grid OldPos ManState.man}]}
-      GridTemp = {UpdateItemAt Grid OldPos [ports#nil]}
-
-
+      GridTemp = {UpdateItemAt Grid OldPos [ports#{RemovePort Grid OldPos ManState.man}]}
+      %GridTemp = {UpdateItemAt Grid OldPos [ports#nil]}
       {UpdateItemAt GridTemp NewPos  [ports#{AddPort GridTemp NewPos man(port:ManState.man color:ManState.color)}]}
    end
 
