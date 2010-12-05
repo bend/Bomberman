@@ -265,7 +265,7 @@ define
 	    T.I.J = block(type:normal bombs:0 foods:0 ports:nil)
 	 end
       end
-      {SetWallsInGrid T {RandomPositions Walls X Y}}
+      {SetWallsInGrid T {RandomWallPositions Walls X Y}}
    end
 
    fun {NewEmptyGrid X Y}
@@ -290,10 +290,10 @@ define
       else Grid end
    end
 
-   fun {RandomPositions N XMax YMax}
+   fun {RandomWallPositions N XMax YMax}
       if N==0 then nil
       else
-	 pos(x:{Utils.random 1 XMax} y:{Utils.random 1 YMax})|{RandomPositions N-1 XMax YMax}
+	 pos(x:{Utils.random 2 XMax-1} y:{Utils.random 1 YMax})|{RandomWallPositions N-1 XMax YMax}
       end
    end
 

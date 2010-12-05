@@ -5,7 +5,7 @@ X Y
 % X Y Food Walls
 X=6
 Y=8
-GameGrid={Grid.newGridPort X Y 2 3}
+GameGrid={Grid.newGridPort X Y 2 4}
 for I in 1..Y do
    Man1 Man2 in 
    Man1 = {Man.newMan GameGrid 1 1 I a}
