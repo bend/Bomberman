@@ -131,18 +131,14 @@ define
    end
 
    fun {ListAffectedPos Grid Pos Axis Dir Power}
-      if Power < 0 orelse Pos.x>{Width Grid} orelse Pos.x<1 orelse Pos.y>{Width Grid.1} orelse Pos.y<1 then nil
+      if Power < 0 orelse Pos.x>{Width Grid} orelse Pos.x<1 orelse Pos.y>{Width Grid.1} orelse Pos.y<1 then
+	 nil
       else
 	 if {GetItemAt Grid Pos}.type == wall then  nil
 	 else
 	    NewCoord in 
-	    if Dir == minus then NewCoord = Pos.Axis -1
-	    else NewCoord = Pos.Axis +1 end
-	    if NewCoord==0 orelse NewCoord>{Width Grid} then
-	       nil
-	    else
-	       Pos|{ListAffectedPos Grid {AdjoinList Pos [Axis#NewCoord]} Axis Dir Power-1}
-	    end
+	    if Dir == minus then NewCoord = Pos.Axis -1 else NewCoord = Pos.Axis +1 end
+	    Pos|{ListAffectedPos Grid {AdjoinList Pos [Axis#NewCoord]} Axis Dir Power-1}
 	 end
       end
    end
