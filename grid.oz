@@ -24,6 +24,7 @@ define
 		    [] movingTo(currentState:ManState dest:Pos) then
 		       OldPos=ManState.pos
 		       StrengthIncrement={GetItemAt Grid Pos}.foods + {GetItemAt Grid OldPos}.foods
+		       {Browser.browse strengthIncrement#StrengthIncrement}
 		       GridTemp NewGrid 
 		    in
 		       {Browser.browse movingFrom#ManState.color#OldPos#to#Pos#strength#ManState.strength}
@@ -40,7 +41,12 @@ define
 		       {DetonateBomb Grid Pos Params}
 		    []foods#timer(pos:Pos params:Params) then TempGrid in
 		       {Browser.browse food_rotten_cleanup}
-		       TempGrid = {UpdateItemAt Grid Pos [foods#{GetItemAt Grid Pos}.foods -1]}
+		       % only decrement the number of food if there is some food! If there's no food there, it's been eaten yet.
+		       if {GetItemAt Grid Pos}.foods>0 then 
+			  TempGrid = {UpdateItemAt Grid Pos [foods#{GetItemAt Grid Pos}.foods -1]}
+		       else
+			  TempGrid = Grid
+		       end
 		       {AddFoodToGrid TempGrid {RandomFoodPos TempGrid} T GridPort}
 		    else
 		       {Browser.browse got_unmanaged_message#Message}
@@ -330,10 +336,10 @@ define
 	 if Item.ports\=nil then
 	    {Board player(Item.ports.1.color Pos.x Pos.y)}
 	 else
-	    if Item.foods\=0 then
+	    if Item.foods>0 then
 	       {Board food(Pos.x Pos.y)}
 	    else
-		  if Item.bombs\=0 then
+		  if Item.bombs>0 then
 		     {Board bomb(Pos.x Pos.y)}
 		  end
 	    end		  
