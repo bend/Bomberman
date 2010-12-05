@@ -22,7 +22,7 @@ define
    end
    fun {DecideToPutBomb ManState}
       if ManState.strength>0 then
-	 if {Utils.random 1 10}>8 then
+	 if {Utils.random 1 10}>9 then
 	    {Browser.browse will_put_bomb}
 	    true
 	 else

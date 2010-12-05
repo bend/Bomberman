@@ -1,10 +1,13 @@
 declare
 [Grid] = {Module.link ['./grid.ozf']}
 [Man] = {Module.link ['./man.ozf']}
+X Y 
 % X Y Food Walls
-GameGrid={Grid.newGridPort 10 10 5 10}
-for I in 1..10 do
+X=4
+Y=4
+GameGrid={Grid.newGridPort X Y 2 3}
+for I in 1..X do
    Man1 Man2 in 
    Man1 = {Man.newMan GameGrid 1 1 I a}
-   Man2 = {Man.newMan GameGrid 1 10 I b}
+   Man2 = {Man.newMan GameGrid 1 Y I b}
 end

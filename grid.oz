@@ -37,7 +37,7 @@ define
 		    []bombs#timer(pos:Pos params:Params) then
 		       {Browser.browse detonate_bomb_at#Pos}
 		       % only handle the timer mesage if bomb not yet detonated, eg by string of explosion
-		       if {GetItemAt Gird Pos}.bombs>0 then
+		       if {GetItemAt Grid Pos}.bombs>0 then
 			  {DetonateBomb Grid Pos Params}
 		       else
 			  Grid
@@ -215,7 +215,8 @@ define
       L2 = {MovesListInDir ManState.pos x minus}
       L3 = {MovesListInDir ManState.pos y plus}
       L4 = {MovesListInDir ManState.pos y minus}
-      possibleMoves(moves: {AppendAll L1 L2 L3 L4})
+      % Include current position in list of possible moves, in case man is blocked by other men.
+      possibleMoves(moves: {Append [ManState.pos] {AppendAll L1 L2 L3 L4 }})
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
