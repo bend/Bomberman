@@ -30,15 +30,18 @@ define
 		       {Browser.browse movingFrom#ManState.color#OldPos#to#Pos#strength#ManState.strength}
 		       GridTemp={UpdateItemAt Grid OldPos [foods#0]}
                        NewGrid={UpdateItemAt Grid Pos [foods#0]}
-
 		       {Send ManState.man newManState(type:move state:{AdjoinList ManState [pos#Pos strength#ManState.strength+StrengthIncrement]})}
-		       
 		       {MovePort NewGrid ManState.pos Pos ManState}
 		    [] placeBomb(manState:ManState) then
 		       {AddBombToGrid Grid ManState T GridPort}
 		    []bombs#timer(pos:Pos params:Params) then
 		       {Browser.browse detonate_bomb_at#Pos}
-		       {DetonateBomb Grid Pos Params}
+		       % only handle the timer mesage if bomb not yet detonated, eg by string of explosion
+		       if {GetItemAt Gird Pos}.bombs>0 then
+			  {DetonateBomb Grid Pos Params}
+		       else
+			  Grid
+		       end
 		    []foods#timer(pos:Pos params:Params) then TempGrid in
 		       {Browser.browse food_rotten_cleanup}
 		       % only decrement the number of food if there is some food! If there's no food there, it's been eaten yet.
