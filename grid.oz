@@ -37,7 +37,7 @@ define
 		    []bombs#timer(pos:Pos params:Params) then
 		       {Browser.browse detonate_bomb_at#Pos}
 		       % only handle the timer mesage if bomb not yet detonated, eg by string of explosion
-		       if {GetItemAt Grid Pos}.bombs>0 then
+		       if {GetItemAt Grid Pos}.bombs\=nil then
 			  {DetonateBomb Grid Pos Params}
 		       else
 			  Grid
@@ -68,8 +68,14 @@ define
 	 case LPos of H|T then
 	    Item in Item= {GetItemAt Grid H}
 	    if Item.type == normal then
-	       {SendToAll {GetItemAt Grid H}.ports hitByBomb(color:Params.color)}
-	       {DetonateBombAux {UpdateItemAt Grid H [foods#0 bombs#0 ports#nil]} T}
+	       if Item.bombs\=nil andthen H\=Pos then % if there's a bomb, explods it it
+		  GridTemp in GridTemp = {DetonateBombChain Grid H {GetItemAt Grid H}}
+		  {SendToAll {GetItemAt GridTemp H}.ports hitByBomb(color:Params.color)}
+		  {DetonateBombAux {UpdateItemAt GridTemp H [foods#0 bombs#nil ports#nil]} T}
+	       else
+		  {SendToAll {GetItemAt Grid H}.ports hitByBomb(color:Params.color)}
+		  {DetonateBombAux {UpdateItemAt Grid H [foods#0 bombs#nil ports#nil]} T}
+	       end
 	    else
 	       Grid
 	    end
@@ -83,6 +89,31 @@ define
 	 T
       end
    end
+   %b(power:ManState.strength color:ManState.color pos:ManState.pos)
+   fun {DetonateBombChain Grid Pos Block}
+      fun {DetonateBombAux Grid LPos}
+	 case LPos of H|T then
+	    It in It={GetItemAt Grid H}
+	    if It.type == normal then
+	       if It.bombs\=nil andthen H\=pos then
+		  GridTemp in GridTemp = {DetonateBombChain Grid H {GetItemAt Grid H}}
+		  {SendToAll {GetItemAt GridTemp H}.ports hitByBomb(color:It.bombs.1.color)}
+		  {DetonateBombAux {UpdateItemAt GridTemp H [foods#0 bombs#nil ports#nil]} T}
+	       else
+		  {SendToAll {GetItemAt Grid H}.ports hitByBomb(color:It.bombs.1.color)}
+		  {DetonateBombAux {UpdateItemAt Grid H [foods#0 bombs#nil ports#nil]} T}
+	       end
+	    else
+	       Grid
+	    end
+	 else
+	    Grid
+	 end
+      end
+   in
+      {DetonateBombAux Grid {GetAffectedPos Grid Pos Block.bombs.1.power}}
+   end
+
 
    fun {InitiateFoods Grid Foods Timer GridPort}
       if Foods == 0 then
@@ -223,9 +254,12 @@ define
    % Adds the bomb to the grid and stats a timer.
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    fun {AddBombToGrid Grid ManState Timer GridPort}
-      {GenericAdder Grid ManState.pos Timer GridPort bombs params(power:ManState.strength color:ManState.color delay:{Utils.tick}*30)}
+      GridTemp Params in
+      Params = params(power:ManState.strength color:ManState.color)
+      GridTemp = {UpdateItemAt Grid ManState.pos [bombs#[b(power:ManState.strength color:ManState.color pos:ManState.pos) {GetItemAt Grid ManState.pos}.bombs]]}
+      {Send Timer startTimer(delay:{Utils.tick}*30 port:GridPort response:bombs#timer(pos:ManState.pos params:Params))}
+      GridTemp
    end
-
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Adds the food to the grid and stats a timer.
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -262,7 +296,7 @@ define
       for I in 1..X do
 	 for J in 1..Y do
 	    T.I = {MakeTuple grid Y}
-	    T.I.J = block(type:normal bombs:0 foods:0 ports:nil)
+	    T.I.J = block(type:normal bombs:nil foods:0 ports:nil)
 	 end
       end
       {SetWallsInGrid T {RandomWallPositions Walls X Y}}
@@ -339,7 +373,7 @@ define
 	    if Item.foods>0 then
 	       {Board food(Pos.x Pos.y)}
 	    else
-		  if Item.bombs>0 then
+		  if Item.bombs\=nil then
 		     {Board bomb(Pos.x Pos.y)}
 		  end
 	    end		  
