@@ -3,6 +3,7 @@ export
    newGridPort:NewGridPort
 import
    Utils at './utils.ozf'
+   Score at './score.ozf'
    GUI at './gui.ozf'
    Browser 
 
@@ -13,13 +14,23 @@ define
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    
    fun {NewGridPort X Y Foods Walls}
-      GridPort T in
+      GridPort T S in
       Board = {GUI.newBoard init(X Y)}
       T = {Utils.timer}
+      S = {Score.newScorePort Board}
       GridPort= {Utils.newPortObject
 		 fun {$ Message Grid}
 		    case Message of askPossibilities(ManState) then
 		       {Send ManState.man {PossibleMoves Grid ManState X Y}}
+		       Grid
+		    [] newMan(currentState:ManState) then
+		       {Send S newMan(state:ManState)}
+		       Grid
+		    [] deadByTeammate(state:State) then
+		       {Send S Message}
+		       Grid
+		    [] deadByOther(state:State) then
+		       {Send S Message}
 		       Grid
 		    [] movingTo(currentState:ManState dest:Pos) then
 		       OldPos=ManState.pos

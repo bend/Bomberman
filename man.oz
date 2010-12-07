@@ -41,9 +41,10 @@ define
       ManTimer = {Utils.timer}
       State =  man(color:Color strength:0 state:waiting grid:Grid pos:pos(x:X y:Y) id:Id man:Man)
       {Browser.browse settingup}
+      {Send Grid newMan(currentState:State)}
       {Send Grid movingTo(currentState:State dest:pos(x:X y:Y))}
       Man = {Utils.newPortObject
-
+	     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Man behaviour
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -54,11 +55,13 @@ define
 		   case Msg of hitByBomb(color:Color) then
 		      if Color==State.color then
 			 {Browser.browse deadByTeammate}
+			 {Send Grid deadByTeammate(state:State)}
 			 {AdjoinList State [state#dead]}
 		      else
 			 {Browser.browse deadByOther}
 			 T in T = {AdjoinList State [color#Color]}
 			 {Send Grid movingTo(currentState:T dest:T.pos)}
+			 {Send Grid deadByOther(state:State)}
 			 T
 		      end
 		   [] newManState(type:Type state:State) then
