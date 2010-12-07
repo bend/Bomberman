@@ -129,7 +129,8 @@ define
 	 end
       end
    in
-      {DetonateBombAux Grid {GetAffectedPos Grid Pos Block.bombs.1.power}}
+      %{DetonateBombAux Grid {GetAffectedPos Grid Pos Block.bombs.1.power}}
+      Grid
    end
 
    proc {ExpolodesBombAt Grid Pos}

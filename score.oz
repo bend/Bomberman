@@ -42,7 +42,6 @@ define
 		     else SF=Score
 		     end
 		     {Browser.browse SF.teama#SF.teamb#SF.init}
-		     {Delay 2000}
 		     if ((SF.teama==0 andthen SF.teamb>0) orelse (SF.teamb==0 andthen SF.teama>0)) andthen SF.init==finish then
 			{Send Grid endOfGame()}
 		     end
