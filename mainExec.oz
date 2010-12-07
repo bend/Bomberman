@@ -6,11 +6,8 @@ import
    Browser 
 define
 % X Y Food Walls
-GameGrid={Grid.newGridPort 5 5 5 5}
-for I in 1..2 do
-   Man1 Man2 in 
-   Man1 = {Man.newMan GameGrid 1 1 I a}
-   Man2 = {Man.newMan GameGrid 1 5 I b}
-end
-  {Send GameGrid initComplete()}
+X=5
+Y=5
+GameGrid={Grid.newGridPort X Y 5 5}
+{Man.initMen X Y GameGrid}
 end

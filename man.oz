@@ -1,6 +1,6 @@
 functor
 export
-   newMan:NewMan
+   initMen:InitMen
 import
    Utils at './utils.ozf'
    Grid at './grid.ozf'
@@ -35,7 +35,16 @@ define
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % End to implement
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   proc {InitMen X Y GameGrid}
+      for I in 1..Y do
+	 Man1 Man2 in 
+	 Man1 = {NewMan GameGrid 1 1 I a}
+	 Man2 = {NewMan GameGrid 1 X I b}
+      end
+      {Send GameGrid initComplete()}
+   end
 
+   
    fun {NewMan Grid Id X Y Color}
    % Initialize state and man
       ManTimer = {Utils.timer}
