@@ -3,6 +3,7 @@ import
    Application % Allows to terminate the application
    System 
    QTk at 'x-oz://system/wp/QTk.ozf'
+   Utils at './utils.ozf'
    OS
 export
   newBoard:NewBoard
@@ -33,7 +34,7 @@ define
    class Gui
       attr grid
 	 scorea scoreb
-	 playera playerb bomb food bg wall
+	 playera playerb bomb food beer bg wall
       meth init(H W)
 	 CD = {OS.getCWD}
 	 Grid ScoreA ScoreB
@@ -63,6 +64,7 @@ define
 	 playera :=  {QTk.newImage photo(file:CD#'/playerA.gif')}
 	 playerb := {QTk.newImage photo(file:CD#'/playerB.gif')}
 	 food := {QTk.newImage photo(file:CD#'/food.gif')}
+	 beer:= {QTk.newImage photo(file:CD#'/beer.gif')}
 	 wall := {QTk.newImage photo(file:CD#'/wall.gif')}
 	 bomb := {QTk.newImage photo(file:CD#'/bomb.gif')}
 	 bg := {QTk.newImage photo(file:CD#'/white.gif')}
@@ -91,7 +93,13 @@ define
 	 {@grid configure(label(image:@bomb) row:X+X-1 column:Y+Y-1)}
       end
       meth food(X Y) Img in
-	 {@grid configure(label(image:@food) row:X+X-1 column:Y+Y-1)}
+	local A in A={Utils.rand 1 2}
+	 if A==1 then
+	    {@grid configure(label(image:@food) row:X+X-1 column:Y+Y-1)}
+	 else
+	    {@grid configure(label(image:@beer) row:X+X-1 column:Y+Y-1)}
+	 end
+	end
       end
       meth wall(X Y) Img in
 	 {@grid configure(label(image:@wall) row:X+X-1 column:Y+Y-1)}
