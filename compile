@@ -1,0 +1,3 @@
+#compiles the project
+ozc -c utils.oz man.oz grid.oz gui.oz score.oz
+ozc -x mainExec.oz
