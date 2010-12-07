@@ -23,7 +23,6 @@ define
    fun {DecideToPutBomb ManState}
       if ManState.strength>0 then
 	 if {Utils.random 1 10}>9 then
-	    {Browser.browse will_put_bomb}
 	    true
 	 else
 	    false
@@ -49,7 +48,6 @@ define
    % Initialize state and man
       ManTimer = {Utils.timer}
       State =  man(color:Color strength:0 state:waiting grid:Grid pos:pos(x:X y:Y) id:Id man:Man)
-      {Browser.browse settingup}
       {Send Grid newMan(currentState:State)}
       {Send Grid movingTo(currentState:State dest:pos(x:X y:Y))}
       Man = {Utils.newPortObject
@@ -88,17 +86,14 @@ define
 		      if {DecideToPutBomb State} then NewState in
 			 {Send State.grid placeBomb(manState:State)}
 			 {Send ManTimer startTimer(delay:{DelayFromStrength State.strength} port:Man response:canMove)}
-			 {Browser.browse sent_place_bomb}
-			 {Browser.browse new_strength#State.strength-1}
 			 NewState = {AdjoinList State [strength#(State.strength-1)]}
-			 {Browser.browse new_state#NewState}
 			 NewState
 		      else
 			 {Send State.grid askPossibilities(State)}
 			 State
 		      end
 		   else
-		      {Browser.browse Msg}
+		      {Browser.browse unknownMsg#Msg}
 		      State
 		   end
 		end

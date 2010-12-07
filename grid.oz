@@ -41,10 +41,8 @@ define
 		    [] movingTo(currentState:ManState dest:Pos) then
 		       OldPos=ManState.pos
 		       StrengthIncrement={GetItemAt Grid Pos}.foods + {GetItemAt Grid OldPos}.foods
-		       {Browser.browse strengthIncrement#StrengthIncrement}
 		       GridTemp NewGrid 
 		    in
-		       {Browser.browse movingFrom#ManState.color#OldPos#to#Pos#strength#ManState.strength}
 		       GridTemp={UpdateItemAt Grid OldPos [foods#0]}
                        NewGrid={UpdateItemAt Grid Pos [foods#0]}
 		       {Send ManState.man newManState(type:move state:{AdjoinList ManState [pos#Pos strength#ManState.strength+StrengthIncrement]})}
@@ -52,7 +50,6 @@ define
 		    [] placeBomb(manState:ManState) then
 		       {AddBombToGrid Grid ManState T GridPort}
 		    []bombs#timer(pos:Pos params:Params) then
-		       {Browser.browse detonate_bomb_at#Pos}
 		       % only handle the timer mesage if bomb not yet detonated, eg by string of explosion
 		       if {GetItemAt Grid Pos}.bombs\=nil then
 			  {DetonateBomb Grid Pos Params}
@@ -60,7 +57,6 @@ define
 			  Grid
 		       end
 		    []foods#timer(pos:Pos params:Params) then TempGrid in
-		       {Browser.browse food_rotten_cleanup}
 		       % only decrement the number of food if there is some food! If there's no food there, it's been eaten yet.
 		       if {GetItemAt Grid Pos}.foods>0 then 
 			  TempGrid = {UpdateItemAt Grid Pos [foods#{GetItemAt Grid Pos}.foods -1]}
@@ -154,8 +150,6 @@ define
 
    fun {RandomFoodPos Grid}
       X Y in
-      {Browser.browse width_grid#{Width Grid}}
-      {Browser.browse height_grid#{Width Grid.1}}
       X = {Utils.random 1 {Width Grid}}
       Y = {Utils.random 1 {Width Grid.1}}
       if {GetItemAt Grid pos(x:X y:Y)}.type \= normal then
@@ -165,7 +159,6 @@ define
    end
 
    proc {StartPutFoodTimer Pos Timer GridPort Delay}
-      {Browser.browse test}
       {Send Timer startTimer(delay:Delay port:GridPort response:putFood#timer(pos:Pos params:params()))}
    end
    
@@ -187,9 +180,7 @@ define
       thread L2 = {ListAffectedPos Grid pos(x:Pos.x-1 y:Pos.y) x minus Power-1} end
       thread L3 = {ListAffectedPos Grid pos(x:Pos.x y:Pos.y+1) y plus Power-1} end
       thread L4 = {ListAffectedPos Grid pos(x:Pos.x y:Pos.y-1) y minus Power-1} end
-      {Browser.browse l#L1#L2#L3#L4}
       Temp = {AppendAll L1 L2 L3 L4}
-      {Browser.browse affected#Temp}
       Temp
    end
 
@@ -242,7 +233,6 @@ define
    fun {MovePort Grid OldPos NewPos ManState}
       GridTemp in
       GridTemp = {UpdateItemAt Grid OldPos [ports#{RemovePort Grid OldPos ManState.man}]}
-      %GridTemp = {UpdateItemAt Grid OldPos [ports#nil]}
       {UpdateItemAt GridTemp NewPos  [ports#{AddPort GridTemp NewPos man(port:ManState.man color:ManState.color)}]}
    end
 
@@ -352,7 +342,6 @@ define
       case L of H|T then
 	 Z in
 	 Z = {UpdateItemAt Grid H [type#wall]}
-	 %{Redraw Z H}
 	 {SetWallsInGrid Z T}	 
       else Grid end
    end
