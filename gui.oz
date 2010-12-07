@@ -125,5 +125,5 @@ end
 %   {G player(a 5 5)}
 %   {G bomb(5 5)}
 %   {G reset(5 5)}
-%   {G score(a 4)}
+
 end

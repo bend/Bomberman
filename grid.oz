@@ -122,7 +122,7 @@ define
    proc {ExpolodesBombAt Grid Pos}
       {Board explosion(Pos.x Pos.y)}
       {Delay 200}
-      {Redraw Grid Pos}
+      {Board reset(Pos.x Pos.y)}
    end
    
    
@@ -398,7 +398,6 @@ define
 	 {Board wall(Pos.x Pos.y)}
       end
    end
-
 
 
    
