@@ -17,11 +17,16 @@ define
       GridPort T S in
       Board = {GUI.newBoard init(X Y)}
       T = {Utils.timer}
-      S = {Score.newScorePort Board}
+      S = {Score.newScorePort Board GridPort}
       GridPort= {Utils.newPortObject
 		 fun {$ Message Grid}
 		    case Message of askPossibilities(ManState) then
 		       {Send ManState.man {PossibleMoves Grid ManState X Y}}
+		       Grid
+		    [] endOfGame() then
+		       _
+		    [] initComplete() then
+		       {Send S Message}
 		       Grid
 		    [] newMan(currentState:ManState) then
 		       {Send S newMan(state:ManState)}

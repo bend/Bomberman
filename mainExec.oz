@@ -12,4 +12,5 @@ for I in 1..2 do
    Man1 = {Man.newMan GameGrid 1 1 I a}
    Man2 = {Man.newMan GameGrid 1 5 I b}
 end
+  {Send GameGrid initComplete()}
 end
