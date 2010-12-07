@@ -34,7 +34,7 @@ define
    class Gui
       attr grid
 	 scorea scoreb
-	 playera playerb bomb food beer bg wall
+	 playera playerb bomb food beer bg wall explosion
       meth init(H W)
 	 CD = {OS.getCWD}
 	 Grid ScoreA ScoreB
@@ -67,7 +67,9 @@ define
 	 beer:= {QTk.newImage photo(file:CD#'/beer.gif')}
 	 wall := {QTk.newImage photo(file:CD#'/wall.gif')}
 	 bomb := {QTk.newImage photo(file:CD#'/bomb.gif')}
+	 explosion := {QTk.newImage photo(file:CD#'/explosion.gif')}
 	 bg := {QTk.newImage photo(file:CD#'/white.gif')}
+	 
       end
 
       meth player(Team X Y) Img in
@@ -92,6 +94,11 @@ define
       meth bomb(X Y) Img in
 	 {@grid configure(label(image:@bomb) row:X+X-1 column:Y+Y-1)}
       end
+
+      meth explosion(X Y) Img in
+	 {@grid configure(label(image:@explosion) row:X+X-1 column:Y+Y-1)}
+      end
+	
       meth food(X Y) Img in
 	local A in A={Utils.random 1 2}
 	 if A==1 then

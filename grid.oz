@@ -69,6 +69,7 @@ define
    fun {DetonateBomb Grid Pos Params}
       fun {DetonateBombAux Grid LPos}
 	 case LPos of H|T then
+	    thread {ExpolodesBombAt Grid H} end
 	    Item in Item= {GetItemAt Grid H}
 	    if Item.type == normal then
 	       if Item.bombs\=nil andthen H\=Pos then % if there's a bomb, explods it it
@@ -96,6 +97,7 @@ define
    fun {DetonateBombChain Grid Pos Block}
       fun {DetonateBombAux Grid LPos}
 	 case LPos of H|T then
+  	    thread {ExpolodesBombAt Grid H} end
 	    It in It={GetItemAt Grid H}
 	    if It.type == normal then
 	       if It.bombs\=nil andthen H\=pos then
@@ -117,7 +119,13 @@ define
       {DetonateBombAux Grid {GetAffectedPos Grid Pos Block.bombs.1.power}}
    end
 
-
+   proc {ExpolodesBombAt Grid Pos}
+      {Board explosion(Pos.x Pos.y)}
+      {Delay 200}
+      {Redraw Grid Pos}
+   end
+   
+   
    fun {InitiateFoods Grid Foods Timer GridPort}
       if Foods == 0 then
 	 Grid
