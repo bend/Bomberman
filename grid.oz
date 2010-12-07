@@ -122,7 +122,7 @@ define
       if Foods == 0 then
 	 Grid
       else
-	 {StartPutFoodTimer {RandomFoodPos Grid} Timer GridPort {Utils.tick}*Foods}
+	 {StartPutFoodTimer {RandomFoodPos Grid} Timer GridPort {Utils.tick}*(2*Foods)}
 	 {InitiateFoods Grid Foods-1 Timer GridPort}
       end
    end
