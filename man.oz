@@ -39,7 +39,7 @@ define
    fun {NewMan Grid Id X Y Color}
    % Initialize state and man
       ManTimer = {Utils.timer}
-      State =  man(color:Color strength:1 state:waiting grid:Grid pos:pos(x:X y:Y) id:Id man:Man)
+      State =  man(color:Color strength:0 state:waiting grid:Grid pos:pos(x:X y:Y) id:Id man:Man)
       {Browser.browse settingup}
       {Send Grid movingTo(currentState:State dest:pos(x:X y:Y))}
       Man = {Utils.newPortObject

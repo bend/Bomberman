@@ -50,7 +50,10 @@ define
 		       else
 			  TempGrid = Grid
 		       end
-		       {AddFoodToGrid TempGrid {RandomFoodPos TempGrid} T GridPort}
+		       {StartPutFoodTimer {RandomFoodPos TempGrid} T GridPort {Utils.tick}*5}
+		       TempGrid
+		    []putFood#timer(pos:Pos params:Params) then
+		       {AddFoodToGrid Grid Pos  T GridPort}
 		    else
 		       {Browser.browse got_unmanaged_message#Message}
 		       Grid
@@ -119,7 +122,8 @@ define
       if Foods == 0 then
 	 Grid
       else
-	 {InitiateFoods {AddFoodToGrid Grid {RandomFoodPos Grid} Timer GridPort} Foods-1 Timer GridPort}
+	 {StartPutFoodTimer {RandomFoodPos Grid} Timer GridPort {Utils.tick}*Foods}
+	 {InitiateFoods Grid Foods-1 Timer GridPort}
       end
    end
 
@@ -134,7 +138,11 @@ define
       else pos(x:X y:Y)
       end
    end
-   
+
+   proc {StartPutFoodTimer Pos Timer GridPort Delay}
+      {Browser.browse test}
+      {Send Timer startTimer(delay:Delay port:GridPort response:putFood#timer(pos:Pos params:params()))}
+   end
    
       
    proc {SendToAll L M}
