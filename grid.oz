@@ -24,6 +24,7 @@ define
 		       {Send ManState.man {PossibleMoves Grid ManState X Y}}
 		       Grid
 		    [] endOfGame() then
+		       {Browser.browse gameFinish}
 		       _
 		    [] initComplete() then
 		       {Send S Message}
