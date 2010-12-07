@@ -93,7 +93,7 @@ define
 	 {@grid configure(label(image:@bomb) row:X+X-1 column:Y+Y-1)}
       end
       meth food(X Y) Img in
-	local A in A={Utils.rand 1 2}
+	local A in A={Utils.random 1 2}
 	 if A==1 then
 	    {@grid configure(label(image:@food) row:X+X-1 column:Y+Y-1)}
 	 else
