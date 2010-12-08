@@ -29,8 +29,9 @@ define
 		    [] initComplete() then
 		       {Send S Message}
 		       Grid
-		    [] newMan(currentState:ManState) then
+		    [] newMan(currentState:ManState pos:Pos) then
 		       {Send S newMan(state:ManState)}
+		       %{UpdateItemAt Grid Pos [ports#ManState.man]}
 		       Grid
 		    [] deadByTeammate(state:State) then
 		       {Send S Message}
@@ -389,7 +390,7 @@ define
    proc {Redraw Grid Pos}
       Item={GetItemAt Grid Pos}
    in
-      %{Board reset(Pos.x Pos.y)}
+      {Board reset(Pos.x Pos.y)}
       if Item.type==normal then
 	 if Item.ports\=nil then
 	    {Board player(Item.ports.1.color Pos.x Pos.y)}
@@ -399,7 +400,7 @@ define
 	    else
 	       if Item.bombs\=nil then
 		  {Board bomb(Pos.x Pos.y)}
-	       else {Board reset(Pos.x Pos.y)}
+%	       else {Board reset(Pos.x Pos.y)}
 	       end
 	    end		  
 	 end

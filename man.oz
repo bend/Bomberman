@@ -48,7 +48,7 @@ define
    % Initialize state and man
       ManTimer = {Utils.timer}
       State =  man(color:Color strength:0 state:waiting grid:Grid pos:pos(x:X y:Y) id:Id man:Man)
-      {Send Grid newMan(currentState:State)}
+      {Send Grid newMan(currentState:State pos(x:X y:Y))}
       {Send Grid movingTo(currentState:State dest:pos(x:X y:Y))}
       Man = {Utils.newPortObject
 	     
