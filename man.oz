@@ -20,17 +20,7 @@ define
    in
       {Nth PossibleMoves I}
    end
-   fun {DecideToPutBomb ManState}
-      if ManState.strength>0 then
-	 if {Utils.random 1 10}>9 then
-	    true
-	 else
-	    false
-	 end
-      else
-	 false
-      end
-   end
+  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % End to implement
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -72,29 +62,24 @@ define
 			 T
 		      end
 		   [] newManState(type:Type state:State) then
-                      % from grid
-                      % if update was due to a move, trigger new move request
-                      %if Type==move then
-		      %{Send ManTimer startTimer(delay:{DelayFromStrength State.strength} port:Man response:canMove)}
-		      %end
 		      State
-		   [] possibleMoves(moves:L) then
-		      Dest in Dest = {ChooseMove L}
-		      if Dest \= State.pos then % if its the same position we dont send the new pos
-			 {Send State.grid movingTo(currentState:State dest:Dest)}
-		      end
-		      {Send ManTimer startTimer(delay:{DelayFromStrength State.strength} port:Man response:canMove)}
-		      State
-		   [] canMove then
-		      if {DecideToPutBomb State} then NewState in
-			 {Send State.grid placeBomb(manState:State)}
-			 {Send ManTimer startTimer(delay:{DelayFromStrength State.strength} port:Man response:canMove)}
-			 NewState = {AdjoinList State [strength#(State.strength-1)]}
-			 NewState
+		   [] possibleMoves(moves:L type:Type) then
+		      TempState in
+		      if Type == move then
+			 Dest in Dest = {ChooseMove L}
+			 if Dest \= State.pos then % if its the same position we dont send the new pos
+			    {Send State.grid movingTo(currentState:State dest:Dest)}
+			 end
+			 TempState = State
 		      else
+			 {Send State.grid placeBomb(manState:State)}
+			 TempState = {AdjoinList State [strength#(State.strength-1)]}
+		      end 
+		      {Send ManTimer startTimer(delay:{DelayFromStrength State.strength} port:Man response:canMove)}
+		      TempState
+		   [] canMove then
 			 {Send State.grid askPossibilities(State)}
 			 State
-		      end
 		   else
 		      {Browser.browse unknownMsg#Msg}
 		      State

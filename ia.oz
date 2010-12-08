@@ -42,12 +42,26 @@ define
       L3 = {MovesListInDir ManState.pos y plus}
       L4 = {MovesListInDir ManState.pos y minus}
       % Include current position in list of possible moves, in case man is blocked by other men.
-      possibleMoves(moves: {ChooseBestMove Grid {Append [ManState.pos] {Utils.appendAll L1 L2 L3 L4 }}})
+      if {DecideToPutBomb ManState} then
+	 possibleMoves(moves:nil type:bomb)
+      else
+	 possibleMoves(moves: {ChooseBestMove Grid {Append [ManState.pos] {Utils.appendAll L1 L2 L3 L4 }}} type:move)
+      end
    end
 
    fun {ChooseBestMove Grid LPos}
-      
       LPos
    end
-   
+
+    fun {DecideToPutBomb ManState}
+      if ManState.strength>0 then
+	 if {Utils.random 1 10}>9 then
+	    true
+	 else
+	    false
+	 end
+      else
+	 false
+      end
+   end
 end
