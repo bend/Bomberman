@@ -85,11 +85,14 @@ define
 	    thread {ExpolodesBombAt Grid H} end
 	    Item in Item= {GetItemAt Grid H}
 	    if Item.type == normal then
-%	       if Item.bombs\=nil andthen H\=Pos then % if there's a bomb, explods it
-	       if Item.bombs\=nil then % if there's a bomb, explods it 
-		  GridTemp in GridTemp = {DetonateBombChain Grid H {GetItemAt Grid H}}
+	       if Item.bombs\=nil andthen H\=Pos then % if there's a bomb, explods it
+		  {Browser.browse 1}
+		  GridTemp in GridTemp = {DetonateBombAux {UpdateItemAt Grid H [foods#0 bombs#nil ports#nil]} T}
+		  {Browser.browse 2}
+		  
 		  {SendToAll {GetItemAt GridTemp H}.ports hitByBomb(color:Params.color)}
-		  {DetonateBombAux {UpdateItemAt GridTemp H [foods#0 bombs#nil ports#nil]} T}
+		  {DetonateBombChain GridTemp H {GetItemAt Grid H} Params.color}
+
 	       else
 		  {SendToAll {GetItemAt Grid H}.ports hitByBomb(color:Params.color)}
 		  {DetonateBombAux {UpdateItemAt Grid H [foods#0 bombs#nil ports#nil]} T}
@@ -108,18 +111,23 @@ define
       end
    end
    %b(power:ManState.strength color:ManState.color pos:ManState.pos)
-   fun {DetonateBombChain Grid Pos Block}
+   fun {DetonateBombChain Grid Pos Block Color}
       fun {DetonateBombAux Grid LPos}
 	 case LPos of H|T then
   	    thread {ExpolodesBombAt Grid H} end
 	    It in It={GetItemAt Grid H}
 	    if It.type == normal then
 	       if It.bombs\=nil andthen H\=pos then
-		  GridTemp in GridTemp = {DetonateBombChain Grid H {GetItemAt Grid H}}
+		  {Browser.browse 4}
+		  
+		  GridTemp in GridTemp = {DetonateBombAux {UpdateItemAt Grid H [foods#0 bombs#nil ports#nil]} T}
+		  {Browser.browse 5}
+
 		  {SendToAll {GetItemAt GridTemp H}.ports hitByBomb(color:It.bombs.1.color)}
-		  {DetonateBombAux {UpdateItemAt GridTemp H [foods#0 bombs#nil ports#nil]} T}
+		  {DetonateBombChain GridTemp H {GetItemAt Grid H} It.bombs.1.color}
+
 	       else
-		  {SendToAll {GetItemAt Grid H}.ports hitByBomb(color:It.bombs.1.color)}
+		  {SendToAll {GetItemAt Grid H}.ports hitByBomb(color:Color)}
 		  {DetonateBombAux {UpdateItemAt Grid H [foods#0 bombs#nil ports#nil]} T}
 	       end
 	    else
@@ -130,8 +138,8 @@ define
 	 end
       end
    in
-      %{DetonateBombAux Grid {GetAffectedPos Grid Pos Block.bombs.1.power}}
-      Grid
+      {DetonateBombAux Grid {GetAffectedPos Grid Pos Block.bombs.1.power}}
+      %Grid
    end
 
    proc {ExpolodesBombAt Grid Pos}
