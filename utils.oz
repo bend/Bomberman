@@ -5,6 +5,7 @@ export
    timer:Timer
    random:Random
    tick:Tick
+   appendAll:AppendAll
 import
    OS
 define
@@ -46,4 +47,9 @@ define
    fun {Tick}
       200
    end
+
+   fun {AppendAll L1 L2 L3 L4}
+      {Append L1 {Append L2 {Append L3 L4}}}
+   end
+
 end   
