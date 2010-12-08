@@ -86,7 +86,7 @@ define
 	    Item in Item= {GetItemAt Grid H}
 	    if Item.type == normal then
 %	       if Item.bombs\=nil andthen H\=Pos then % if there's a bomb, explods it
-	       if Item.bombs\=nil andthen then % if there's a bomb, explods it 
+	       if Item.bombs\=nil then % if there's a bomb, explods it 
 		  GridTemp in GridTemp = {DetonateBombChain Grid H {GetItemAt Grid H}}
 		  {SendToAll {GetItemAt GridTemp H}.ports hitByBomb(color:Params.color)}
 		  {DetonateBombAux {UpdateItemAt GridTemp H [foods#0 bombs#nil ports#nil]} T}
@@ -136,8 +136,8 @@ define
 
    proc {ExpolodesBombAt Grid Pos}
       {Board explosion(Pos.x Pos.y)}
-      %{Delay 200}
-      %{Board reset(Pos.x Pos.y)}
+      {Delay 100}
+      {Board reset(Pos.x Pos.y)}
    end
    
    
@@ -397,19 +397,16 @@ define
 	    if Item.foods>0 then
 	       {Board food(Pos.x Pos.y)}
 	    else
-		  if Item.bombs\=nil then
-		     {Board bomb(Pos.x Pos.y)}
-		  else {Board reset(Pos.x Pos.y)}
-		  end
+	       if Item.bombs\=nil then
+		  {Board bomb(Pos.x Pos.y)}
+	       else {Board reset(Pos.x Pos.y)}
+	       end
 	    end		  
 	 end
       else
 	 {Board wall(Pos.x Pos.y)}
       end
    end
-
-
-   
 end
 
 

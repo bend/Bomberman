@@ -6,8 +6,8 @@ import
    Browser 
 define
 % X Y Food Walls
-X=10
-Y=10
-GameGrid={Grid.newGridPort X Y 30 15}
+X=5
+Y=5
+GameGrid={Grid.newGridPort X Y 5 5}
 {Man.initMen X Y GameGrid}
 end

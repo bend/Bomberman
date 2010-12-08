@@ -48,8 +48,8 @@ define
    % Initialize state and man
       ManTimer = {Utils.timer}
       State =  man(color:Color strength:0 state:waiting grid:Grid pos:pos(x:X y:Y) id:Id man:Man)
-      {Send Grid newMan(currentState:State pos(x:X y:Y))}
-      {Send Grid movingTo(currentState:State dest:pos(x:X y:Y))}
+      {Send Grid newMan(currentState:State pos:pos(x:X y:Y))}
+      %{Send Grid movingTo(currentState:State dest:pos(x:X y:Y))}
       Man = {Utils.newPortObject
 	     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -79,7 +79,10 @@ define
 		      %end
 		      State
 		   [] possibleMoves(moves:L) then
-		      {Send State.grid movingTo(currentState:State dest:{ChooseMove L})}
+		      Dest in Dest = {ChooseMove L}
+		      if Dest \= State.pos then % if its the same position we dont send the new pos
+			 {Send State.grid movingTo(currentState:State dest:Dest)}
+		      end
 		      {Send ManTimer startTimer(delay:{DelayFromStrength State.strength} port:Man response:canMove)}
 		      State
 		   [] canMove then
