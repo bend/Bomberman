@@ -39,14 +39,18 @@ define
 		       {Send S Message}
 		       Grid
 		    [] movingTo(currentState:ManState dest:Pos) then
-		       OldPos=ManState.pos
-		       StrengthIncrement={GetItemAt Grid Pos}.foods + {GetItemAt Grid OldPos}.foods
-		       GridTemp NewGrid 
-		    in
-		       GridTemp={UpdateItemAt Grid OldPos [foods#0]}
-                       NewGrid={UpdateItemAt Grid Pos [foods#0]}
-		       {Send ManState.man newManState(type:move state:{AdjoinList ManState [pos#Pos strength#ManState.strength+StrengthIncrement]})}
-		       {MovePort NewGrid ManState.pos Pos ManState}
+		       if ManState.pos == Pos then
+			  Grid
+		       else	
+			  OldPos=ManState.pos
+			  StrengthIncrement={GetItemAt Grid Pos}.foods + {GetItemAt Grid OldPos}.foods
+			  GridTemp NewGrid 
+		       in
+			  GridTemp={UpdateItemAt Grid OldPos [foods#0]}
+			  NewGrid={UpdateItemAt Grid Pos [foods#0]}
+			  {Send ManState.man newManState(type:move state:{AdjoinList ManState [pos#Pos strength#ManState.strength+StrengthIncrement]})}
+			  {MovePort NewGrid ManState.pos Pos ManState}
+		       end
 		    [] placeBomb(manState:ManState) then
 		       {AddBombToGrid Grid ManState T GridPort}
 		    []bombs#timer(pos:Pos params:Params) then
@@ -354,9 +358,6 @@ define
       end
    end
 
-
-   
-
    
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Returns the item (record) that is located on the block X Y of the grid
@@ -388,7 +389,7 @@ define
    proc {Redraw Grid Pos}
       Item={GetItemAt Grid Pos}
    in
-      {Board reset(Pos.x Pos.y)}
+      %{Board reset(Pos.x Pos.y)}
       if Item.type==normal then
 	 if Item.ports\=nil then
 	    {Board player(Item.ports.1.color Pos.x Pos.y)}
@@ -396,18 +397,16 @@ define
 	    if Item.foods>0 then
 	       {Board food(Pos.x Pos.y)}
 	    else
-		  if Item.bombs\=nil then
-		     {Board bomb(Pos.x Pos.y)}
-		  end
+	       if Item.bombs\=nil then
+		  {Board bomb(Pos.x Pos.y)}
+	       else {Board reset(Pos.x Pos.y)}
+	       end
 	    end		  
 	 end
       else
 	 {Board wall(Pos.x Pos.y)}
       end
    end
-
-
-   
 end
 
 

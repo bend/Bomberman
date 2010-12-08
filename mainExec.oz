@@ -8,6 +8,6 @@ define
 % X Y Food Walls
 X=10
 Y=10
-GameGrid={Grid.newGridPort X Y 15 15}
+GameGrid={Grid.newGridPort X Y 30 15}
 {Man.initMen X Y GameGrid}
 end
