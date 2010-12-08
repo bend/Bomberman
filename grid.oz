@@ -1,10 +1,12 @@
 functor
 export
    newGridPort:NewGridPort
+   getItemAt:GetItemAt
 import
    Utils at './utils.ozf'
    Score at './score.ozf'
    GUI at './gui.ozf'
+   IA at './ia.ozf'
    Browser 
 
 define
@@ -21,7 +23,7 @@ define
       GridPort= {Utils.newPortObject
 		 fun {$ Message Grid}
 		    case Message of askPossibilities(ManState) then
-		       {Send ManState.man {PossibleMoves Grid ManState X Y}}
+		       {Send ManState.man {IA.possibleMoves Grid ManState X Y}}
 		       Grid
 		    [] endOfGame() then
 		       {Browser.browse gameFinish}
@@ -190,13 +192,10 @@ define
       thread L2 = {ListAffectedPos Grid pos(x:Pos.x-1 y:Pos.y) x minus Power-1} end
       thread L3 = {ListAffectedPos Grid pos(x:Pos.x y:Pos.y+1) y plus Power-1} end
       thread L4 = {ListAffectedPos Grid pos(x:Pos.x y:Pos.y-1) y minus Power-1} end
-      Temp = {AppendAll L1 L2 L3 L4}
+      Temp = {Utils.appendAll L1 L2 L3 L4}
       Temp
    end
 
-   fun {AppendAll L1 L2 L3 L4}
-      {Append L1 {Append L2 {Append L3 L4}}}
-   end
 
    fun {ListAffectedPos Grid Pos Axis Dir Power}
       if Power < 0 orelse Pos.x>{Width Grid} orelse Pos.x<1 orelse Pos.y>{Width Grid.1} orelse Pos.y<1 then
@@ -246,42 +245,6 @@ define
       {UpdateItemAt GridTemp NewPos  [ports#{AddPort GridTemp NewPos man(port:ManState.man color:ManState.color)}]}
    end
 
-   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   % Returns a list of possoble moves to the player depending on his position
-   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   fun {PossibleMoves Grid ManState MaxX MaxY}
-      L1 L2 L3 L4
-      fun {MovesListInDir Pos Axis Dir}
-	 NewPos
-	 Max=max(x:MaxX y:MaxY)
-	 Dest
-	 Index
-      in
-	 if Dir==plus then
-	    Index=ManState.pos.Axis+1
-	 else
-	    Index=ManState.pos.Axis-1
-	 end
-	 if Index==0 orelse Index>Max.Axis then
-	    nil
-	 else
-	    NewPos={AdjoinList ManState.pos [Axis#Index]}
-	    Dest = {GetItemAt Grid NewPos}
-	    if Dest.ports==nil andthen Dest.type==normal then
-	       [NewPos]
-	    else
-	       nil
-	    end
-	 end
-      end
-   in
-      L1 = {MovesListInDir ManState.pos x plus}
-      L2 = {MovesListInDir ManState.pos x minus}
-      L3 = {MovesListInDir ManState.pos y plus}
-      L4 = {MovesListInDir ManState.pos y minus}
-      % Include current position in list of possible moves, in case man is blocked by other men.
-      possibleMoves(moves: {Append [ManState.pos] {AppendAll L1 L2 L3 L4 }})
-   end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    % Adds the bomb to the grid and stats a timer.
