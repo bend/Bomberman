@@ -59,7 +59,8 @@ define
 		       {AddBombToGrid Grid ManState T GridPort}
 		    []bombs#timer(pos:Pos params:Params) then
 		       % only handle the timer mesage if bomb not yet detonated and still present (eg by string of explosion)
-		       if {List.some {GetItemAt Grid Pos}.bombs fun {$ I } I.id==Params.id end }\=nil then
+		       {Browser.browse {GetItemAt Grid Pos}.bombs}
+		       if {List.some {GetItemAt Grid Pos}.bombs fun {$ I } if I==nil then false else I.id==Params.id end  end }\=nil then
 			  {DetonateBomb Grid Pos Params}
 		       else
 			  Grid
@@ -260,7 +261,7 @@ define
       Id={Utils.random 1 1000000}
 	in
       Params = params(power:ManState.strength color:ManState.color id:Id)
-      GridTemp = {UpdateItemAt Grid ManState.pos [bombs#[b(power:ManState.strength color:ManState.color pos:ManState.pos id:Id) {GetItemAt Grid ManState.pos}.bombs]]}
+      GridTemp = {UpdateItemAt Grid ManState.pos [bombs#{Append [b(power:ManState.strength color:ManState.color pos:ManState.pos id:Id)] {GetItemAt Grid ManState.pos}.bombs}]}
       {Send Timer startTimer(delay:{Utils.tick}*30 port:GridPort response:bombs#timer(pos:ManState.pos params:Params))}
       GridTemp
    end
