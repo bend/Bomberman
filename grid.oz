@@ -43,12 +43,18 @@ define
 		    [] movingTo(currentState:ManState dest:Pos) then
 		       OldPos=ManState.pos
 		       StrengthIncrement={GetItemAt Grid Pos}.foods + {GetItemAt Grid OldPos}.foods
-		       GridTemp NewGrid 
+		       GridTemp NewGrid
+		       DestItem = {GetItemAt Grid Pos}
 		    in
-		       GridTemp={UpdateItemAt Grid OldPos [foods#0]}
-                       NewGrid={UpdateItemAt Grid Pos [foods#0]}
-		       {Send ManState.man newManState(type:move state:{AdjoinList ManState [pos#Pos strength#ManState.strength+StrengthIncrement]})}
-		       {MovePort NewGrid ManState.pos Pos ManState}
+		       if DestItem.ports==nil then
+			  GridTemp={UpdateItemAt Grid OldPos [foods#0]}
+			  NewGrid={UpdateItemAt Grid Pos [foods#0]}
+			  {Send ManState.man newManState(type:move state:{AdjoinList ManState [pos#Pos strength#ManState.strength+StrengthIncrement]})}
+			  {MovePort NewGrid ManState.pos Pos ManState}
+		       else
+			  %%Place already taken by another man, turn lost
+			  Grid
+		       end
 		    [] placeBomb(manState:ManState) then
 		       {AddBombToGrid Grid ManState T GridPort}
 		    []bombs#timer(pos:Pos params:Params) then
