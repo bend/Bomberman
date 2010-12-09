@@ -45,7 +45,7 @@ define
    end
    
    fun {Tick}
-      200
+      10
    end
 
    fun {AppendAll L1 L2 L3 L4}
